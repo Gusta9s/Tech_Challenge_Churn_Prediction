@@ -216,3 +216,96 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ==============================
+# Secrets & credentials
+# ==============================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+credentials.json
+credentials.yaml
+credentials.yml
+secrets.json
+secrets.yaml
+secrets.yml
+service-account*.json
+*_service_account.json
+config/secrets*
+.aws/
+.gcp/
+.azure/
+kaggle.json
+
+# ==============================
+# Data files (large / raw / generated datasets)
+# ==============================
+*.csv
+*.tsv
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+*.parquet
+*.feather
+*.xlsx
+*.xls
+*.h5
+*.hdf5
+*.db
+*.sqlite
+*.zip
+*.tar
+*.tar.gz
+*.gz
+*.7z
+
+# ==============================
+# Models & ML artifacts
+# ==============================
+*.pickle
+*.model
+*.pt
+*.pth
+*.onnx
+*.h5
+*.keras
+*.sav
+mlruns/
+mlflow/
+wandb/
+checkpoints/
+*.ckpt
+
+# ==============================
+# Notebooks - checkpoints and heavy outputs
+# ==============================
+.ipynb_checkpoints/
+
+# ==============================
+# Images / plots generated during EDA
+# ==============================
+*.png
+*.jpg
+*.jpeg
+*.svg
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.svg
+
+# ==============================
+# OS files
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Docker
+# ==============================
+*.env.docker
