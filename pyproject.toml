@@ -1,0 +1,19 @@
+[project]
+name = "tech-challenge-churn-prediction"
+version = "0.1.1"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Gusta9s", email = "gustavoapacheco@yahoo.com.br" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "pandas>=3.0.6",
+]
+
+[project.scripts]
+tech-challenge-churn-prediction = "tech_challenge_churn_prediction:main"
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13.0"]
+build-backend = "uv_build"
