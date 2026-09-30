@@ -307,6 +307,17 @@ Thumbs.db
 desktop.ini
 
 # ==============================
+# DVC
+# ==============================
+/.dvc/cache
+/.dvc/tmp
+/.dvc/config.local
+.dvc/tmp/
+.dvcignore.bak
+dvc_plots/
+*.dvc.lock
+
+# ==============================
 # Docker
 # ==============================
 *.env.docker
