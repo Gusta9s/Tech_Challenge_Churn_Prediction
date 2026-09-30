@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ML Canvas — previsão de churn</title>
+  <style>
+    :root {
+      --paper: #e6e0d6;
+      --sheet: #f7f4ee;
+      --ink: #1c2430;
+      --muted: #5e584f;
+      --line: #d5cdc1;
+      --learn: #2f4a3e;
+      --learn-wash: #eef2ee;
+      --predict: #7a4632;
+      --predict-wash: #f6efe9;
+      --eval: #3d4d63;
+      --eval-wash: #eef1f4;
+      --value: #1c2430;
+      --cream: #f6f1e8;
+      --open: #7a4632;
+      --assume: #3d4d63;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
+      font-weight: 400;
+      line-height: 1.35;
+    }
+
+    .sheet {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 40px;
+      background: var(--sheet);
+      border: 1px solid #cfc6b8;
+      padding: 28px 28px 22px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px 32px;
+      align-items: end;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
+      font-size: 40px;
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+    }
+
+    .sub {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 12px;
+    }
+
+    .flow li {
+      position: relative;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      white-space: nowrap;
+    }
+
+    .flow li:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      left: calc(100% + 8px);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(2, max-content);
+      gap: 8px 28px;
+      gap: 8px;
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .legend li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: 1fr 1.18fr 1fr;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .col > article:last-child {
+      flex: 1;
+    }
+
+    .col-label {
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .learn .col-label { color: var(--learn); }
+    .core .col-label { color: var(--ink); }
+    .act .col-label { color: var(--predict); }
+
+    article {
+      border: 1px solid var(--line);
+      padding: 12px 12px 11px;
+      background: #fff;
+    }
+
+    .learn article { background: var(--learn-wash); border-color: #c9d2cb; }
+    .act article { background: var(--predict-wash); border-color: #e2d0c6; }
+    .eval article { background: var(--eval-wash); border-color: #cdd5de; }
+
+    article h2 {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin: 0 0 8px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    article h2 span {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    article p, article li {
+      margin: 0;
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    article p + p,
+    article ul { margin-top: 6px; }
+
+    article ul {
+      margin: 6px 0 0;
+      padding-left: 16px;
+    }
+
+    article li + li { margin-top: 3px; }
+
+    .value {
+      flex: 1.35;
+      background: var(--value);
+      color: var(--cream);
+      border-color: var(--value);
+      padding: 16px 16px 14px;
+    }
+
+    .value h2,
+    .value p,
+    .value li { color: var(--cream); }
+
+    .value h2 span { color: #b7b1a6; }
+
+    .value .lead {
+      font-family: "Iowan Old Style", Palatino, Georgia, serif;
+      font-size: 22px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .tag {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border: 1px solid currentColor;
+    }
+
+    .tag-open { color: var(--open); }
+    .tag-assume { color: var(--assume); }
+    .tag-later { color: var(--muted); }
+    .value .tag { color: #e7cbbd; }
+
+    .people {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .people h2 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .people ol {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .people li {
+      font-size: 12px;
+      min-width: 0;
+    }
+
+    .people strong {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .people span { color: var(--muted); }
+
+    .fine {
+      margin: 12px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .fine a { color: var(--ink); }
+
+    @media (max-width: 900px) {
+      header, .people, .people ol, .board { display: block; }
+      .flow { flex-wrap: wrap; margin-top: 12px; }
+      .col + .col, .people, article { margin-top: 8px; }
+      h1 { font-size: 32px; }
+    }
+
+    @media print {
+      body { background: white; }
+      .sheet { width: auto; margin: 0; border: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <header>
+      <div>
+        <p class="eyebrow">Machine Learning Canvas · Tech Challenge Fase 1</p>
+        <h1>Previsão de churn</h1>
+        <p class="sub">Operadora de telecomunicações · sistema da entrega final</p>
+      </div>
+      <ol class="flow" aria-label="Caminho da predição">
+        <li>Cliente</li>
+        <li>POST /predict</li>
+        <li>Propensão</li>
+        <li>Ação de retenção</li>
+      </ol>
+    </header>
+
+    <section class="board" aria-label="Dez blocos do ML Canvas">
+      <div class="col learn">
+        <p class="col-label">Aprender</p>
+
+        <article>
+          <h2>Fontes de dados <span>01</span></h2>
+          <p>Telco Customer Churn (IBM), em data/raw.</p>
+          <p>7.043 clientes, 21 colunas, 26,5% de churn.</p>
+        </article>
+
+        <article>
+          <h2>Coleta de dados <span>02</span></h2>
+          <p>Base estática. Novo treino exige nova extração no mesmo formato.</p>
+        </article>
+
+        <article>
+          <h2>Features <span>03</span></h2>
+          <p>17 variáveis: contrato, serviços, tempo de casa e cobrança.</p>
+          <p>Fora: id do cliente, gênero e dependentes. Internet e pagamento em one-hot, num Pipeline.</p>
+        </article>
+
+        <article>
+          <h2>Construção de modelos <span>04</span></h2>
+          <ul>
+            <li>Regressão Logística (baseline)</li>
+            <li>Random Forest</li>
+            <li>MLPClassifier</li>
+          </ul>
+          <p>Scikit-Learn, validação cruzada, seed fixa. Campeão salvo em .joblib.</p>
+        </article>
+      </div>
+
+      <div class="col core">
+        <p class="col-label">Para quê</p>
+
+        <article class="value">
+          <h2>Proposta de valor <span>05</span></h2>
+          <p class="lead">Apontar os clientes com maior risco de cancelar, para agir antes que saiam.</p>
+          <p>Para a diretoria e o time de retenção.</p>
+        </article>
+
+        <article>
+          <h2>Tarefa de ML <span>06</span></h2>
+          <p>Classificação binária.</p>
+          <p>Entrada: dados do cliente. Saída: propensão de churn, de 0 a 1.</p>
+        </article>
+
+        <article class="eval">
+          <h2>Avaliação offline <span>07</span></h2>
+          <ul>
+            <li>Técnicas: AUC-ROC e F1.</li>
+            <li>Negócio: custo = FN × C_fn + FP × C_fp.</li>
+            <li>O custo escolhe o campeão e o limiar.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="col act">
+        <p class="col-label">Decidir</p>
+
+        <article>
+          <h2>Decisões <span>08</span></h2>
+          <p>Acima do limiar, o cliente está em risco e entra na ação de retenção.</p>
+          <p>O limiar é o de menor custo, não 0,5.</p>
+        </article>
+
+        <article>
+          <h2>Fazer predições <span>09</span></h2>
+          <p>FastAPI com o modelo campeão.</p>
+          <ul>
+            <li>GET /health: status e versão do modelo.</li>
+            <li>POST /predict: propensão e risco do cliente.</li>
+          </ul>
+        </article>
+
+        <article class="eval">
+          <h2>Monitoramento <span>10</span></h2>
+          <ul>
+            <li>/health no ar.</li>
+            <li>Testes com pytest.</li>
+            <li>Model Card com desempenho, limitações e vieses.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="people" aria-label="Stakeholders">
+      <h2>Stakeholders</h2>
+      <ol>
+        <li><strong>Diretoria</strong><span>Pediu o modelo. Acompanha churn e custo.</span></li>
+        <li><strong>Time de retenção</strong><span>Prioriza quem contatar.</span></li>
+        <li><strong>Time de dados</strong><span>Treina, serve e documenta.</span></li>
+        <li><strong>Cliente</strong><span>Afetado pela ação. Gênero fora do modelo.</span></li>
+      </ol>
+    </section>
+
+    <p class="fine">
+      Métricas, tratamento dos dados e contrato da API em <a href="ml_canvas.md">ml_canvas.md</a>.
+    </p>
+  </main>
+</body>
+</html>
