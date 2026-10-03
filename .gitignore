@@ -246,6 +246,7 @@ kaggle.json
 # Data files (large / raw / generated datasets)
 # ==============================
 *.csv
+!Telco-Customer-Churn.csv
 *.tsv
 *.json
 !package.json
@@ -304,6 +305,17 @@ checkpoints/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ==============================
+# DVC
+# ==============================
+/.dvc/cache
+/.dvc/tmp
+/.dvc/config.local
+.dvc/tmp/
+.dvcignore.bak
+dvc_plots/
+*.dvc.lock
 
 # ==============================
 # Docker
