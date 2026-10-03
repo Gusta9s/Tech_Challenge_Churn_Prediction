@@ -1,2 +1,4 @@
 metrics:
   - notebooks/regressao_logistica/historico/metrics/metrics.json
+  - notebooks/arvore_de_descisao/historico/arvore_simples/metrics/metrics.json
+  - notebooks/arvore_de_descisao/historico/random_forest/metrics/metrics.json
