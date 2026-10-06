@@ -8,8 +8,10 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "comm>=0.2.3",
     "dvc>=3.67.1",
     "imbalanced-learn>=0.13.0",
+    "ipykernel>=7.4.0",
     "matplotlib>=3.11.2",
     "pandas>=3.0.6",
     "scikit-learn>=1.9.1",
