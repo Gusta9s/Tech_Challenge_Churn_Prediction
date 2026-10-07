@@ -1,2 +1,3 @@
 metrics:
   - notebooks/regressao_logistica/historico/metrics/metrics.json
+  - notebooks/redes_neurais/historico/metrics/metrics.json
