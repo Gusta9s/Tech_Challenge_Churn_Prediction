@@ -1,0 +1,40 @@
+Modelo recomendado: Random Forest (notebooks/arvore_de_descisao/modelo_final)
+Por que ele vence
+1. Melhor ROC AUC em CV (0.847 ± 0.011)
+É o maior poder discriminativo entre todos os modelos testados, e com o segundo menor desvio-padrão do grupo (atrás apenas do AdaBoost). Isso indica que o modelo separa bem churn vs. não-churn mesmo em folds diferentes, não é um resultado de sorte de um split específico.
+
+2. Maior F1 em CV, empatado com Gradient Boosting (0.635)
+Em um problema de churn, o F1 é o indicador mais importante porque equilibra o custo de falsos negativos (clientes que vão cancelar e não são identificados) com o custo de falsos positivos (campanhas de retenção desperdiçadas). O Random Forest entrega esse equilíbrio no nível mais alto junto ao Gradient Boosting, mas com a vantagem adicional de melhor AUC.
+
+3. Recall alto e estável (0.772 ± 0.038 em CV)
+Em produção, errar perdendo um cliente que ia cancelar (falso negativo) custa receita recorrente perdida — geralmente mais caro do que uma ação de retenção desnecessária. O Random Forest captura ~77% dos churners reais, superando AdaBoost (53%) e Regressão Logística (69%), e ficando muito próximo da Árvore Simples (79%) e MLP (77%) — mas com AUC/F1 superiores a ambos.
+
+4. Robustez a data drift e model drift (fator estrutural, não só métrico)
+
+É um ensemble de bagging (bootstrap + feature subsampling por árvore). Cada árvore vê uma amostra e um subconjunto de features diferentes, o que faz o modelo agregado ser menos sensível a pequenas mudanças na distribuição dos dados de entrada (data drift) do que um modelo único (árvore simples) ou um modelo paramétrico rígido (regressão logística, que assume uma fronteira linear fixa nos log-odds).
+Random Forest não extrapola fortemente fora da distribuição de treino (decisões são baseadas em regiões do espaço de features já vistas), o que reduz o risco de previsões erráticas quando o perfil de clientes mudar ao longo do tempo (ex.: novos planos, mudança de preços).
+O desvio-padrão relativamente baixo entre folds (ROC AUC ±0.011, o segundo menor do estudo) é evidência empírica direta de resiliência: o desempenho não varia muito dependendo de qual parte dos dados é usada para treinar, sinal de que o modelo generaliza e não está memorizando padrões específicos de um recorte.
+5. Sinal preditivo em casos difíceis (zona de decisão ambígua)
+Pela composição por votação/média de múltiplas árvores com profundidade controlada (max_depth=12) e min_samples_leaf=15, o Random Forest suaviza decisões em regiões de fronteira (clientes com padrão misto de sinais de risco), evitando o overfitting em outliers que uma única árvore sofre (a Árvore Simples tem recall CV mais alto, mas isso vem com precisão baixa de 0.512 — sinal de que está "chutando churn" com mais frequência, incluindo em casos ambíguos, o que não é desejável).
+
+Comparação direta com os concorrentes
+vs. AdaBoost: AdaBoost tem a maior acurácia (0.803) e maior precisão (0.658), mas isso vem ao custo de um recall baixíssimo (0.533) — ele erra ao não identificar quase metade dos clientes que de fato vão cancelar. Para o objetivo de negócio (reter clientes antes que cancelem), esse é um viés inaceitável: alta acurácia aparente mascarando baixa sensibilidade à classe minoritária (churn).
+
+vs. Gradient Boosting: é o concorrente mais próximo — F1 idêntico (0.635), mas AUC levemente inferior (0.844 vs 0.847) e recall mais baixo (0.731 vs 0.772). Gradient Boosting também é sequencial (boosting), o que historicamente é mais sensível a ruído e outliers e tende a ter maior variância de desempenho sob mudança de distribuição dos dados (cada árvore corrige o erro residual da anterior, propagando erro se o padrão mudar). Random Forest, por ser paralelo/bagging, tende a ser mais estável sob esse aspecto.
+
+vs. Árvore Simples: Árvore Simples tem recall ligeiramente maior, mas isso é inflado por baixa precisão (0.512) — o modelo "atira" churn com mais frequência, gerando muitos falsos positivos (ações de retenção desnecessárias). Além disso, uma árvore única tem variância estrutural mais alta — pequenas mudanças nos dados de treino podem alterar significativamente a estrutura de decisão (fenômeno clássico de instabilidade de árvores únicas), o que é justamente o que o Random Forest corrige ao agregar várias árvores.
+
+vs. Regressão Logística: fronteira de decisão linear nos log-odds, apesar do target encoding aplicado. Isso limita a capacidade de capturar interações não-lineares entre variáveis (ex.: tipo de contrato × tempo de permanência × forma de pagamento), que são comuns em padrões de churn. Também não há validação k-fold reportada, então não há evidência de estabilidade sob diferentes amostras — apenas um holdout único, insuficiente para afirmar generalização.
+
+vs. Redes Neurais (MLP): MLP tem recall competitivo (0.775) e AUC razoável (0.831), mas é o modelo com maior complexidade/menor interpretabilidade, maior sensibilidade a normalização de features e a hiperparâmetros (alpha, learning_rate_init), e historicamente mais exigente em retrain quando a distribuição dos dados muda (model drift), já que sua superfície de decisão é mais complexa e menos auditável. Para uma aplicação de churn em produção, onde explicabilidade e estabilidade de retraining são relevantes, isso pesa contra.
+
+Conclusão
+O Random Forest (notebooks/arvore_de_descisao/modelo_final) é o modelo mais adequado para produção porque reúne, simultaneamente:
+
+Melhor capacidade discriminativa (maior ROC AUC em CV, 0.847), garantindo boa separação entre classes mesmo em zonas de decisão difíceis;
+Melhor equilíbrio F1 entre precisão e recall, empatado no topo com Gradient Boosting, mas superando-o em recall e AUC;
+Recall alto o suficiente para captar a maioria dos clientes em risco real de churn, crítico para o objetivo de negócio de retenção;
+Maior estabilidade estrutural por ser um ensemble de bagging, com desvios-padrão baixos entre folds — evidência empírica de generalização e resiliência a mudanças na distribuição dos dados (data drift);
+Menor sensibilidade a ruído e outliers do que modelos sequenciais (boosting) ou únicos (árvore simples), reduzindo a necessidade de retraining frequente por degradação de desempenho (model drift);
+Boa interpretabilidade residual (feature importances, estrutura de árvores), facilitando auditoria e monitoramento contínuo do modelo em produção — algo que redes neurais não oferecem com a mesma facilidade.
+Por essas razões, o Random Forest apresenta o melhor trade-off entre poder preditivo, estabilidade e robustez operacional, sendo a escolha mais segura e sustentável para um ambiente de produção de predição de churn.

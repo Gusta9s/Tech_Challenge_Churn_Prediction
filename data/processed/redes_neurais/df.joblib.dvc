@@ -1,0 +1,5 @@
+outs:
+- md5: 53531ee9c5425a61d48f34491279994a
+  size: 1338195
+  hash: md5
+  path: df.joblib
