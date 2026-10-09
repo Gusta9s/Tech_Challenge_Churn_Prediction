@@ -4,3 +4,4 @@ metrics:
   - notebooks/arvore_de_descisao/historico/random_forest/metrics/metrics.json
   - notebooks/arvore_de_descisao/historico/ada_boost/metrics/metrics.json
   - notebooks/arvore_de_descisao/historico/gradient_boosting/metrics/metrics.json
+  - notebooks/redes_neurais/historico/metrics/metrics.json
