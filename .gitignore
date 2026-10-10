@@ -254,8 +254,6 @@ kaggle.json
 !tsconfig.json
 *.parquet
 *.feather
-*.xlsx
-*.xls
 *.h5
 *.hdf5
 *.db
@@ -282,6 +280,13 @@ mlflow/
 wandb/
 checkpoints/
 *.ckpt
+
+# Modelos treinados versionados para avaliacao/apresentacao (pitch da banca).
+# O DVC gera um .gitignore por diretorio de versao ignorando o artefato bruto;
+# essas excecoes garantem que o .joblib e o .joblib.dvc de cada nova versao
+# em models/vX.Y.Z/ sejam sempre considerados em commits futuros.
+!models/**/*.joblib
+!models/**/*.joblib.dvc
 
 # ==============================
 # Notebooks - checkpoints and heavy outputs
@@ -321,3 +326,8 @@ dvc_plots/
 # Docker
 # ==============================
 *.env.docker
+
+# ==============================
+# Scripts
+# ==============================
+/scripts/
