@@ -1,6 +1,6 @@
 [project]
 name = "tech-challenge-churn-prediction"
-version = "0.1.8"
+version = "0.1.9"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "dvc>=3.67.1",
+    "fastapi>=0.143.0",
     "imbalanced-learn>=0.13.0",
     "matplotlib>=3.11.2",
     "pandas>=3.0.6",
