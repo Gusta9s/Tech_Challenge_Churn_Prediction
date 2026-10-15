@@ -3,21 +3,21 @@ from pathlib import Path
 import joblib
 from sklearn.base import BaseEstimator
 
+from tech_challenge_churn_prediction.config.model_settings import obter_model_settings
 from tech_challenge_churn_prediction.utils.caminho_projeto import encontrar_raiz_projeto
 from tech_challenge_churn_prediction.utils.versionamento_modelo import (
     encontrar_diretorio_versao_mais_recente,
 )
-
-NOME_ARQUIVO_MODELO_CAMPEAO = "random_forest.joblib"
 
 
 class ModelLoaderService:
     """Responsavel exclusivamente por carregar o artefato do modelo treinado (.joblib).
 
     A versao do modelo e resolvida dinamicamente (maior versao semantica
-    disponivel em `models/`), nao conhece nada sobre pre-processamento ou
-    predicao, apenas entrega um estimador sklearn pronto para uso, mantendo
-    o carregamento desacoplado do restante do fluxo de inferencia.
+    disponivel em `ModelSettings.diretorio_modelos`), nao conhece nada sobre
+    pre-processamento ou predicao, apenas entrega um estimador sklearn
+    pronto para uso, mantendo o carregamento desacoplado do restante do
+    fluxo de inferencia.
     """
 
     def __init__(self, caminho_modelo: Path | None = None) -> None:
@@ -26,9 +26,10 @@ class ModelLoaderService:
 
     @staticmethod
     def _resolver_caminho_modelo_campeao() -> Path:
-        diretorio_modelos = encontrar_raiz_projeto() / "models"
+        configuracoes_modelo = obter_model_settings()
+        diretorio_modelos = encontrar_raiz_projeto() / configuracoes_modelo.diretorio_modelos
         diretorio_versao_mais_recente = encontrar_diretorio_versao_mais_recente(diretorio_modelos)
-        return diretorio_versao_mais_recente / NOME_ARQUIVO_MODELO_CAMPEAO
+        return diretorio_versao_mais_recente / configuracoes_modelo.nome_arquivo_modelo
 
     def carregar(self) -> BaseEstimator:
         """Carrega o modelo uma unica vez e reutiliza a instancia em memoria
