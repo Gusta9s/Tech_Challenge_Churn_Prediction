@@ -1,6 +1,6 @@
 [project]
 name = "tech-challenge-churn-prediction"
-version = "0.1.11"
+version = "0.1.12"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -8,14 +8,10 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
-    "dvc>=3.67.1",
     "fastapi>=0.143.0",
-    "imbalanced-learn>=0.13.0",
-    "matplotlib>=3.11.2",
     "pandas>=3.0.6",
     "pydantic-settings>=2.15.0",
     "scikit-learn>=1.9.1",
-    "seaborn>=0.13.2",
     "uvicorn[standard]>=0.54.0",
 ]
 
@@ -37,6 +33,23 @@ dev = [
     "xlrd>=2.0.2",
     "xlwt>=1.3.0",
 ]
+# Dependencias usadas apenas nos notebooks de treinamento/EDA (dvc, graficos,
+# balanceamento de classes). Nao sao importadas por src/, entao ficam fora
+# do requirements.txt exportado para a imagem Docker da API, mantendo o
+# runtime de inferencia enxuto. Instaladas por padrao localmente via
+# `[tool.uv] default-groups` para nao quebrar o fluxo de notebooks/DVC.
+notebooks = [
+    "dvc>=3.67.1",
+    "imbalanced-learn>=0.13.0",
+    "ipykernel>=7.4.0",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.11.2",
+    "nbconvert>=7.17.2",
+    "seaborn>=0.13.2",
+]
+
+[tool.uv]
+default-groups = ["dev", "notebooks"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
