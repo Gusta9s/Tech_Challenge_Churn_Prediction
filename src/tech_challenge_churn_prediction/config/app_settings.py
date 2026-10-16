@@ -11,7 +11,9 @@ class AppSettings(BaseSettings):
     ambiente do processo ou do arquivo `.env` na raiz do projeto.
     """
 
-    model_config = SettingsConfigDict(env_prefix="APP_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="APP_", env_file=".env", extra="ignore"
+    )
 
     titulo: str
     versao: str

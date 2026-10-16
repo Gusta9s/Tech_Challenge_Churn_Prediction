@@ -12,7 +12,9 @@ class SecuritySettings(BaseSettings):
     ou do arquivo `.env` na raiz do projeto.
     """
 
-    model_config = SettingsConfigDict(env_prefix="SECURITY_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="SECURITY_", env_file=".env", extra="ignore"
+    )
 
     campos_sensiveis: frozenset[str]
     mascara_padrao: str

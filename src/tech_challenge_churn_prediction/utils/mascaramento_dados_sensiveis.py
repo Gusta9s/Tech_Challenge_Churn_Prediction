@@ -1,4 +1,6 @@
-from tech_challenge_churn_prediction.config.security_settings import obter_security_settings
+from tech_challenge_churn_prediction.config.security_settings import (
+    obter_security_settings,
+)
 
 
 def mascarar_campos_sensiveis(dados: dict) -> dict:

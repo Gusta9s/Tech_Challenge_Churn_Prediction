@@ -11,7 +11,9 @@ class LoggingSettings(BaseSettings):
     ambiente do processo ou do arquivo `.env` na raiz do projeto.
     """
 
-    model_config = SettingsConfigDict(env_prefix="LOG_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="LOG_", env_file=".env", extra="ignore"
+    )
 
     nivel: str
     formato: str

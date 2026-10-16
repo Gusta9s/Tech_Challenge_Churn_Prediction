@@ -2,9 +2,15 @@ import logging
 
 import pandas as pd
 
-from tech_challenge_churn_prediction.schemas.churn_prediction_input import ChurnPredictionInput
-from tech_challenge_churn_prediction.schemas.churn_prediction_result import ChurnPredictionResult
-from tech_challenge_churn_prediction.utils.mascaramento_dados_sensiveis import mascarar_campos_sensiveis
+from tech_challenge_churn_prediction.schemas.churn_prediction_input import (
+    ChurnPredictionInput,
+)
+from tech_challenge_churn_prediction.schemas.churn_prediction_result import (
+    ChurnPredictionResult,
+)
+from tech_challenge_churn_prediction.utils.mascaramento_dados_sensiveis import (  # noqa: E501
+    mascarar_campos_sensiveis,
+)
 
 
 class ChurnPredictionLoggingService:
@@ -25,11 +31,21 @@ class ChurnPredictionLoggingService:
         self._logger.info("Payload de entrada recebido: %s", payload_mascarado)
 
     def registrar_dados_transformados(self, features: pd.DataFrame) -> None:
-        features_mascaradas = mascarar_campos_sensiveis(features.iloc[0].to_dict())
-        self._logger.info("Dados transformados para o modelo: %s", features_mascaradas)
+        features_mascaradas = mascarar_campos_sensiveis(
+            features.iloc[0].to_dict()
+        )
+        self._logger.info(
+            "Dados transformados para o modelo: %s", features_mascaradas
+        )
 
-    def registrar_resultado_predicao(self, resultado: ChurnPredictionResult) -> None:
-        self._logger.info("Resultado da predicao do modelo: %s", resultado.model_dump())
+    def registrar_resultado_predicao(
+        self, resultado: ChurnPredictionResult
+    ) -> None:
+        self._logger.info(
+            "Resultado da predicao do modelo: %s", resultado.model_dump()
+        )
 
     def registrar_resposta(self, resposta: ChurnPredictionResult) -> None:
-        self._logger.info("Payload de resposta encaminhado: %s", resposta.model_dump())
+        self._logger.info(
+            "Payload de resposta encaminhado: %s", resposta.model_dump()
+        )

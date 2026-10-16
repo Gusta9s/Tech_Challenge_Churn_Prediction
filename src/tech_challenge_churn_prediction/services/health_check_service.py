@@ -1,5 +1,9 @@
-from tech_challenge_churn_prediction.exceptions.app_exceptions import ModeloNaoDisponivelException
-from tech_challenge_churn_prediction.services.model_loader_service import ModelLoaderService
+from tech_challenge_churn_prediction.exceptions.app_exceptions import (
+    ModeloNaoDisponivelException,
+)
+from tech_challenge_churn_prediction.services.model_loader_service import (
+    ModelLoaderService,
+)
 
 
 class HealthCheckService:
