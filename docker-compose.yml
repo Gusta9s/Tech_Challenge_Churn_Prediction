@@ -1,0 +1,56 @@
+services:
+  churn-prediction-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tech-challenge-churn-prediction:local
+    container_name: churn-prediction-api
+
+    # Variaveis de ambiente carregadas dinamicamente do .env na raiz do
+    # projeto (nao ficam hardcoded na imagem nem neste arquivo).
+    env_file:
+      - .env
+
+    ports:
+      - "8001:8000"
+
+    networks:
+      - churn-network
+
+    # API stateless e de baixo tráfego em ambiente local: reinicia sozinha
+    # em caso de falha ou reboot do host, mas nao fica tentando religar
+    # infinitamente se o processo nunca conseguir subir de forma estavel.
+    restart: unless-stopped
+
+    # Movido do Dockerfile: valida liveness + readiness para o Docker so
+    # considerar o container saudavel quando o modelo estiver carregado.
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - >-
+          curl -f http://localhost:8000/health/liveness &&
+          curl -f http://localhost:8000/health/readiness ||
+          exit 1
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+    # Limites enxutos para ambiente de teste local: o modelo campeao e um
+    # RandomForest leve e a API nao processa lotes grandes, entao essa
+    # margem e suficiente sem reservar recursos ociosos da maquina.
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+networks:
+  # Rede bridge compartilhada, preparada para os futuros servicos de
+  # observabilidade (Prometheus e afins) se conectarem a mesma API.
+  churn-network:
+    name: churn-network
+    driver: bridge

@@ -11,5 +11,6 @@ def encontrar_raiz_projeto(marcador: str = "pyproject.toml") -> Path:
             return diretorio
 
     raise FileNotFoundError(
-        f"Nao foi possivel localizar a raiz do projeto (marcador '{marcador}' nao encontrado)."
+        "Nao foi possivel localizar a raiz do projeto "
+        f"(marcador '{marcador}' nao encontrado)."
     )

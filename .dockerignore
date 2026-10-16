@@ -1,0 +1,51 @@
+# Controle de versao e metadados do repositorio
+.git
+.gitignore
+.gitattributes
+.github
+
+# Ambientes virtuais e caches de dependencias
+.venv
+venv
+__pycache__
+*.py[codz]
+*.pyc
+.mypy_cache
+.ruff_cache
+.pytest_cache
+.coverage
+htmlcov
+
+# Diretorios nao necessarios para a execucao dos endpoints da API
+tests/
+notebooks/
+docs/
+scripts/
+data/
+.dvc/
+dvc.yaml
+dvc.lock
+*.dvc
+
+# Notebooks e checkpoints
+.ipynb_checkpoints
+
+# Documentos de apoio e planilhas geradas
+*.xls
+*.xlsx
+
+# Arquivos de ambiente e segredos (nao devem ir para a imagem)
+.env
+.env.*
+!.env.example
+
+# IDEs e arquivos de SO
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Containerizacao (nao precisa se copiar a si mesmo para a imagem)
+Dockerfile
+docker-compose*.yml
+.dockerignore

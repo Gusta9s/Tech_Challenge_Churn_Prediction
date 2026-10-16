@@ -22,7 +22,8 @@ def encontrar_diretorio_versao_mais_recente(diretorio_modelos: Path) -> Path:
 
     if not versoes_disponiveis:
         raise FileNotFoundError(
-            f"Nenhuma versao de modelo (.joblib) encontrada em: {diretorio_modelos}"
+            "Nenhuma versao de modelo (.joblib) encontrada em: "
+            f"{diretorio_modelos}"
         )
 
     versao_mais_recente = max(versoes_disponiveis)
