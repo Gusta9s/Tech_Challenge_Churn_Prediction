@@ -12,7 +12,9 @@ class ModelSettings(BaseSettings):
     `.env` na raiz do projeto.
     """
 
-    model_config = SettingsConfigDict(env_prefix="MODEL_", env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_prefix="MODEL_", env_file=".env", extra="ignore"
+    )
 
     diretorio_modelos: str
     nome_arquivo_modelo: str

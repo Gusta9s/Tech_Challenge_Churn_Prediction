@@ -40,7 +40,10 @@ class PreProcessamentoException(ChurnPredictionAppException):
 
     def __init__(self, cause: Exception | None = None) -> None:
         super().__init__(
-            message="Nao foi possivel processar os dados de entrada para predicao.",
+            message=(
+                "Nao foi possivel processar os dados de entrada "
+                "para predicao."
+            ),
             erro="ERRO_PRE_PROCESSAMENTO",
             status_code=400,
             level="WARNING",

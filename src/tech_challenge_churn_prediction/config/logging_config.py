@@ -1,7 +1,9 @@
 import logging
 import sys
 
-from tech_challenge_churn_prediction.config.logging_settings import obter_logging_settings
+from tech_challenge_churn_prediction.config.logging_settings import (
+    obter_logging_settings,
+)
 
 _logging_configurado = False
 
@@ -16,7 +18,11 @@ def configurar_logging() -> None:
         return
 
     configuracoes = obter_logging_settings()
-    logging.basicConfig(level=configuracoes.nivel, format=configuracoes.formato, stream=sys.stdout)
+    logging.basicConfig(
+        level=configuracoes.nivel,
+        format=configuracoes.formato,
+        stream=sys.stdout,
+    )
     _logging_configurado = True
 
 

@@ -1,4 +1,6 @@
-from tech_challenge_churn_prediction.utils.mapeamento_categorico import MAPA_TIPO_CONTRATO
+from tech_challenge_churn_prediction.utils.mapeamento_categorico import (
+    MAPA_TIPO_CONTRATO,
+)
 
 COLUNAS_ADDONS: tuple[str, ...] = (
     "possui_seguranca_online",
@@ -22,8 +24,10 @@ COLUNAS_METODO_PAGAMENTO: tuple[str, ...] = (
     "metodo_pagamento_mailed_check",
 )
 
-# Ordem exata exigida pelo modelo campeao (RandomForestClassifier.feature_names_in_),
-# treinado em notebooks/arvore_de_descisao/modelo_final/V6-Validacao_cruzada_k_fold_random_forest.ipynb.
+# Ordem exata exigida pelo modelo campeao
+# (RandomForestClassifier.feature_names_in_), treinado em
+# notebooks/arvore_de_descisao/modelo_final/
+# V6-Validacao_cruzada_k_fold_random_forest.ipynb.
 ORDEM_FEATURES_RANDOM_FOREST: tuple[str, ...] = (
     "cliente_em_idade_avancada",
     "casado",
@@ -47,10 +51,12 @@ CATEGORIAS_BINARIAS_SIMPLES: tuple[str, str] = ("No", "Yes")
 
 CATEGORIAS_TIPO_CONTRATO: tuple[str, ...] = tuple(MAPA_TIPO_CONTRATO)
 
-# Ordem casada com COLUNAS_SERVICO_DE_INTERNET (dsl, fibra_optica, sem_internet).
+# Ordem casada com COLUNAS_SERVICO_DE_INTERNET
+# (dsl, fibra_optica, sem_internet).
 CATEGORIAS_SERVICO_DE_INTERNET: tuple[str, ...] = ("DSL", "Fiber optic", "No")
 
-# Ordem casada com COLUNAS_METODO_PAGAMENTO (bank_transfer, credit_card, electronic_check, mailed_check).
+# Ordem casada com COLUNAS_METODO_PAGAMENTO
+# (bank_transfer, credit_card, electronic_check, mailed_check).
 CATEGORIAS_METODO_PAGAMENTO: tuple[str, ...] = (
     "Bank transfer (automatic)",
     "Credit card (automatic)",
