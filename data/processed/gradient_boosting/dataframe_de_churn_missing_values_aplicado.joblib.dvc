@@ -1,0 +1,5 @@
+outs:
+- md5: d2cf2f7bb63178fffad6f3f823853e5e
+  size: 1398707
+  hash: md5
+  path: dataframe_de_churn_missing_values_aplicado.joblib
