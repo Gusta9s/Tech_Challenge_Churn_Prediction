@@ -3,7 +3,10 @@ import logging
 from tech_challenge_churn_prediction.config import logging_config as alvo
 
 
-def test_configurar_logging_aplica_configuracao_na_primeira_chamada(monkeypatch):
+def test_configurar_logging_aplica_configuracao_na_primeira_chamada(
+    monkeypatch,
+):
+    """Configurar logging aplica configuracao na primeira chamada."""
     monkeypatch.setattr(alvo, "_logging_configurado", False)
     chamadas = {}
 
@@ -19,6 +22,7 @@ def test_configurar_logging_aplica_configuracao_na_primeira_chamada(monkeypatch)
 
 
 def test_configurar_logging_e_idempotente_na_segunda_chamada(monkeypatch):
+    """Configurar logging e idempotente na segunda chamada."""
     monkeypatch.setattr(alvo, "_logging_configurado", True)
     foi_chamado = False
 
@@ -34,6 +38,7 @@ def test_configurar_logging_e_idempotente_na_segunda_chamada(monkeypatch):
 
 
 def test_obter_logger_retorna_logger_com_o_nome_informado(monkeypatch):
+    """Obter logger retorna logger com o nome informado."""
     monkeypatch.setattr(alvo, "_logging_configurado", True)
 
     logger = alvo.obter_logger("teste.logger")

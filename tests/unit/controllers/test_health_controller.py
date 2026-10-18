@@ -3,7 +3,9 @@ from fastapi.testclient import TestClient
 
 from tech_challenge_churn_prediction.app import app
 from tech_challenge_churn_prediction.controllers import dependencies
-from tech_challenge_churn_prediction.services.health_check_service import HealthCheckService
+from tech_challenge_churn_prediction.services.health_check_service import (
+    HealthCheckService,
+)
 
 
 class ModelLoaderFalsoOk:
@@ -23,6 +25,7 @@ def limpar_overrides_apos_cada_teste():
 
 
 def test_liveness_retorna_200_e_status_up():
+    """Liveness retorna 200 e status up."""
     client = TestClient(app)
 
     resposta = client.get("/health/liveness")
@@ -32,8 +35,9 @@ def test_liveness_retorna_200_e_status_up():
 
 
 def test_readiness_retorna_200_quando_o_modelo_esta_disponivel():
-    app.dependency_overrides[dependencies.obter_health_check_service] = lambda: HealthCheckService(
-        ModelLoaderFalsoOk()
+    """Readiness retorna 200 quando o modelo esta disponivel."""
+    app.dependency_overrides[dependencies.obter_health_check_service] = (
+        lambda: HealthCheckService(ModelLoaderFalsoOk())
     )
     client = TestClient(app)
 
@@ -44,8 +48,9 @@ def test_readiness_retorna_200_quando_o_modelo_esta_disponivel():
 
 
 def test_readiness_retorna_503_quando_o_modelo_nao_esta_disponivel():
-    app.dependency_overrides[dependencies.obter_health_check_service] = lambda: HealthCheckService(
-        ModelLoaderFalsoComFalha()
+    """Readiness retorna 503 quando o modelo nao esta disponivel."""
+    app.dependency_overrides[dependencies.obter_health_check_service] = (
+        lambda: HealthCheckService(ModelLoaderFalsoComFalha())
     )
     client = TestClient(app)
 

@@ -10,10 +10,15 @@ from tech_challenge_churn_prediction.exceptions.app_exceptions import (
 
 
 def test_excecao_base_guarda_todos_os_metadados_informados():
+    """Excecao base guarda todos os metadados informados."""
     causa = ValueError("detalhe")
 
     excecao = ChurnPredictionAppException(
-        message="mensagem", erro="COD", status_code=418, level="WARNING", cause=causa
+        message="mensagem",
+        erro="COD",
+        status_code=418,
+        level="WARNING",
+        cause=causa,
     )
 
     assert excecao.message == "mensagem"
@@ -25,7 +30,10 @@ def test_excecao_base_guarda_todos_os_metadados_informados():
 
 
 def test_excecao_base_usa_level_error_e_cause_none_por_padrao():
-    excecao = ChurnPredictionAppException(message="mensagem", erro="COD", status_code=500)
+    """Excecao base usa level error e cause none por padrao."""
+    excecao = ChurnPredictionAppException(
+        message="mensagem", erro="COD", status_code=500
+    )
 
     assert excecao.level == "ERROR"
     assert excecao.cause is None
@@ -43,6 +51,7 @@ def test_excecao_base_usa_level_error_e_cause_none_por_padrao():
 def test_subclasses_definem_metadados_fixos_e_propagam_a_causa(
     classe, erro_esperado, status_esperado, level_esperado
 ):
+    """Subclasses definem metadados fixos e propagam a causa."""
     causa = ValueError("falha")
 
     excecao = classe(cause=causa)
@@ -55,9 +64,15 @@ def test_subclasses_definem_metadados_fixos_e_propagam_a_causa(
 
 @pytest.mark.parametrize(
     "classe",
-    [PayloadInvalidoException, PreProcessamentoException, ModeloNaoDisponivelException, PredicaoException],
+    [
+        PayloadInvalidoException,
+        PreProcessamentoException,
+        ModeloNaoDisponivelException,
+        PredicaoException,
+    ],
 )
 def test_subclasses_aceitam_cause_padrao_none(classe):
+    """Subclasses aceitam cause padrao none."""
     excecao = classe()
 
     assert excecao.cause is None

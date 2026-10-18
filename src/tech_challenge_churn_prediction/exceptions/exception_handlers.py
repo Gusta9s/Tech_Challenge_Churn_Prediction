@@ -16,9 +16,12 @@ _logger = obter_logger(__name__)
 
 
 def registrar_exception_handlers(app: FastAPI) -> None:
-    """Ponto unico de registro de todos os exception handlers da aplicacao,
-    centralizando o mapeamento de excecoes para status code e formato de
-    resposta padronizado (level, message, erro, cause).
+    """Registra todos os exception handlers padronizados na aplicacao.
+
+    Parameters
+    ----------
+    app : FastAPI
+        Instancia da aplicacao onde os handlers serao registrados.
     """
     app.add_exception_handler(
         ChurnPredictionAppException, _tratar_excecao_de_dominio
@@ -32,6 +35,20 @@ def registrar_exception_handlers(app: FastAPI) -> None:
 async def _tratar_excecao_de_dominio(
     request: Request, exc: ChurnPredictionAppException
 ) -> JSONResponse:
+    """Converte uma excecao de dominio na resposta de erro padronizada.
+
+    Parameters
+    ----------
+    request : Request
+        Requisicao HTTP que originou a excecao (nao utilizada).
+    exc : ChurnPredictionAppException
+        Excecao de dominio capturada.
+
+    Returns
+    -------
+    JSONResponse
+        Resposta no formato {level, message, erro, cause}.
+    """
     nivel_log = logging.getLevelName(exc.level)
     _logger.log(
         nivel_log, "%s | erro=%s | cause=%s", exc.message, exc.erro, exc.cause
@@ -51,6 +68,20 @@ async def _tratar_excecao_de_dominio(
 async def _tratar_erro_de_validacao(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
+    """Converte um erro de validacao do Pydantic em resposta padronizada.
+
+    Parameters
+    ----------
+    request : Request
+        Requisicao HTTP que originou o erro (nao utilizada).
+    exc : RequestValidationError
+        Erro de validacao do payload de entrada.
+
+    Returns
+    -------
+    JSONResponse
+        Resposta 422 no formato {level, message, erro, cause}.
+    """
     _logger.warning("Payload de entrada invalido: %s", exc.errors())
 
     corpo = ErrorResponse(
@@ -68,6 +99,20 @@ async def _tratar_erro_de_validacao(
 async def _tratar_erro_inesperado(
     request: Request, exc: Exception
 ) -> JSONResponse:
+    """Converte qualquer excecao nao mapeada em resposta padronizada.
+
+    Parameters
+    ----------
+    request : Request
+        Requisicao HTTP que originou a excecao (nao utilizada).
+    exc : Exception
+        Excecao inesperada capturada pelo handler global.
+
+    Returns
+    -------
+    JSONResponse
+        Resposta 500 no formato {level, message, erro, cause}.
+    """
     _logger.error("Erro interno inesperado: %s", exc, exc_info=exc)
 
     corpo = ErrorResponse(

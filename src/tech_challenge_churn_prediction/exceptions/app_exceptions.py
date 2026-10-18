@@ -14,6 +14,21 @@ class ChurnPredictionAppException(Exception):
         level: str = "ERROR",
         cause: Exception | None = None,
     ) -> None:
+        """Inicializa a excecao com os metadados de resposta e log.
+
+        Parameters
+        ----------
+        message : str
+            Mensagem voltada ao cliente da API.
+        erro : str
+            Codigo curto que identifica o tipo de erro.
+        status_code : int
+            Codigo HTTP a ser retornado pelo exception handler.
+        level : str, default="ERROR"
+            Nivel de log usado ao registrar a excecao.
+        cause : Exception or None, default=None
+            Excecao original que motivou este erro, se houver.
+        """
         super().__init__(message)
         self.message = message
         self.erro = erro
@@ -26,6 +41,13 @@ class PayloadInvalidoException(ChurnPredictionAppException):
     """O payload de entrada nao atende ao contrato esperado pela API."""
 
     def __init__(self, cause: Exception | None = None) -> None:
+        """Inicializa a excecao com os metadados fixos de payload invalido.
+
+        Parameters
+        ----------
+        cause : Exception or None, default=None
+            Excecao original que motivou este erro, se houver.
+        """
         super().__init__(
             message="O payload de entrada e invalido ou esta incompleto.",
             erro="PAYLOAD_INVALIDO",
@@ -39,6 +61,13 @@ class PreProcessamentoException(ChurnPredictionAppException):
     """Falha ao transformar o payload de entrada nas features do modelo."""
 
     def __init__(self, cause: Exception | None = None) -> None:
+        """Inicializa a excecao com os metadados fixos de pre-processamento.
+
+        Parameters
+        ----------
+        cause : Exception or None, default=None
+            Excecao original que motivou este erro, se houver.
+        """
         super().__init__(
             message=(
                 "Nao foi possivel processar os dados de entrada "
@@ -55,6 +84,13 @@ class ModeloNaoDisponivelException(ChurnPredictionAppException):
     """O artefato do modelo nao pode ser carregado (ausente ou corrompido)."""
 
     def __init__(self, cause: Exception | None = None) -> None:
+        """Inicializa a excecao com os metadados fixos de modelo indisponivel.
+
+        Parameters
+        ----------
+        cause : Exception or None, default=None
+            Excecao original que motivou este erro, se houver.
+        """
         super().__init__(
             message="O modelo de predicao nao esta disponivel no momento.",
             erro="MODELO_INDISPONIVEL",
@@ -68,6 +104,13 @@ class PredicaoException(ChurnPredictionAppException):
     """Falha ao executar a predicao do modelo sobre as features processadas."""
 
     def __init__(self, cause: Exception | None = None) -> None:
+        """Inicializa a excecao com os metadados fixos de erro de predicao.
+
+        Parameters
+        ----------
+        cause : Exception or None, default=None
+            Excecao original que motivou este erro, se houver.
+        """
         super().__init__(
             message="Ocorreu um erro ao executar a predicao do modelo.",
             erro="ERRO_PREDICAO",

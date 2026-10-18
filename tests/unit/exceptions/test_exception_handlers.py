@@ -4,7 +4,9 @@ import json
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 
-from tech_challenge_churn_prediction.exceptions import exception_handlers as alvo
+from tech_challenge_churn_prediction.exceptions import (
+    exception_handlers as alvo,
+)
 from tech_challenge_churn_prediction.exceptions.app_exceptions import (
     ChurnPredictionAppException,
     PredicaoException,
@@ -20,16 +22,24 @@ def _corpo_json(resposta):
 
 
 def test_registrar_exception_handlers_registra_os_tres_handlers_esperados():
+    """Registrar exception handlers registra os tres handlers esperados."""
     app = FastAPI()
 
     alvo.registrar_exception_handlers(app)
 
-    assert app.exception_handlers[ChurnPredictionAppException] is alvo._tratar_excecao_de_dominio
-    assert app.exception_handlers[RequestValidationError] is alvo._tratar_erro_de_validacao
+    assert (
+        app.exception_handlers[ChurnPredictionAppException]
+        is alvo._tratar_excecao_de_dominio
+    )
+    assert (
+        app.exception_handlers[RequestValidationError]
+        is alvo._tratar_erro_de_validacao
+    )
     assert app.exception_handlers[Exception] is alvo._tratar_erro_inesperado
 
 
 def test_tratar_excecao_de_dominio_com_causa_informada():
+    """Tratar excecao de dominio com causa informada."""
     excecao = PredicaoException(cause=ValueError("falha interna"))
 
     resposta = _executar(alvo._tratar_excecao_de_dominio(None, excecao))
@@ -42,6 +52,7 @@ def test_tratar_excecao_de_dominio_com_causa_informada():
 
 
 def test_tratar_excecao_de_dominio_sem_causa_informada():
+    """Tratar excecao de dominio sem causa informada."""
     excecao = PredicaoException()
 
     resposta = _executar(alvo._tratar_excecao_de_dominio(None, excecao))
@@ -51,8 +62,11 @@ def test_tratar_excecao_de_dominio_sem_causa_informada():
 
 
 def test_tratar_erro_de_validacao_retorna_422_com_detalhes_do_erro():
+    """Tratar erro de validacao retorna 422 com detalhes do erro."""
     excecao = RequestValidationError(
-        errors=[{"loc": ("body", "campo"), "msg": "obrigatorio", "type": "missing"}]
+        errors=[
+            {"loc": ("body", "campo"), "msg": "obrigatorio", "type": "missing"}
+        ]
     )
 
     resposta = _executar(alvo._tratar_erro_de_validacao(None, excecao))
@@ -64,6 +78,7 @@ def test_tratar_erro_de_validacao_retorna_422_com_detalhes_do_erro():
 
 
 def test_tratar_erro_inesperado_retorna_500_com_a_mensagem_da_excecao():
+    """Tratar erro inesperado retorna 500 com a mensagem da excecao."""
     excecao = RuntimeError("explodiu")
 
     resposta = _executar(alvo._tratar_erro_inesperado(None, excecao))

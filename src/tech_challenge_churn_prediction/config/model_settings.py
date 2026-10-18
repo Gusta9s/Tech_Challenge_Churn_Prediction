@@ -4,12 +4,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class ModelSettings(BaseSettings):
-    """Configuracoes do artefato do modelo campeao.
+    """Configuracoes do artefato do modelo campeao, lidas do ambiente.
 
-    Nao possui valores pre-setados: depende exclusivamente de variaveis de
-    ambiente com prefixo `MODEL_` (ex.: MODEL_DIRETORIO_MODELOS,
-    MODEL_NOME_ARQUIVO_MODELO), lidas do ambiente do processo ou do arquivo
-    `.env` na raiz do projeto.
+    Nao possui valores pre-setados: depende exclusivamente de variaveis
+    de ambiente com prefixo `MODEL_`, lidas do ambiente do processo ou
+    do arquivo `.env` na raiz do projeto.
+
+    Attributes
+    ----------
+    diretorio_modelos : str
+        Nome do diretorio onde as versoes do modelo sao salvas
+        (MODEL_DIRETORIO_MODELOS).
+    nome_arquivo_modelo : str
+        Nome do arquivo `.joblib` do modelo (MODEL_NOME_ARQUIVO_MODELO).
     """
 
     model_config = SettingsConfigDict(
@@ -22,4 +29,11 @@ class ModelSettings(BaseSettings):
 
 @lru_cache
 def obter_model_settings() -> ModelSettings:
+    """Retorna a instancia singleton de ModelSettings.
+
+    Returns
+    -------
+    ModelSettings
+        Configuracoes do artefato do modelo campeao.
+    """
     return ModelSettings()

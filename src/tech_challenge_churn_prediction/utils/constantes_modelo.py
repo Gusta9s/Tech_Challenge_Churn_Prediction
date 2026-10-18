@@ -1,3 +1,5 @@
+"""Constantes do contrato de features do modelo campeao (Random Forest)."""
+
 from tech_challenge_churn_prediction.utils.mapeamento_categorico import (
     MAPA_TIPO_CONTRATO,
 )

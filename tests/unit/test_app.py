@@ -5,6 +5,7 @@ from tech_challenge_churn_prediction.app import app, criar_app
 
 
 def test_app_e_uma_instancia_fastapi_com_os_routers_registrados():
+    """App e uma instancia fastapi com os routers registrados."""
     assert isinstance(app, FastAPI)
     client = TestClient(app)
 
@@ -14,6 +15,7 @@ def test_app_e_uma_instancia_fastapi_com_os_routers_registrados():
 
 
 def test_criar_app_monta_uma_nova_instancia_independente_da_global():
+    """Criar app monta uma nova instancia independente da global."""
     nova_app = criar_app()
 
     assert isinstance(nova_app, FastAPI)
