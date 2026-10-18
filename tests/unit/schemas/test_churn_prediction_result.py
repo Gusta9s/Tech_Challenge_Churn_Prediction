@@ -1,7 +1,10 @@
-from tech_challenge_churn_prediction.schemas.churn_prediction_result import ChurnPredictionResult
+from tech_challenge_churn_prediction.schemas.churn_prediction_result import (
+    ChurnPredictionResult,
+)
 
 
 def test_cria_resultado_valido_com_os_campos_informados():
+    """Cria resultado valido com os campos informados."""
     resultado = ChurnPredictionResult(
         churn_previsto=True,
         probabilidade_churn=0.9,

@@ -1,9 +1,18 @@
-from tech_challenge_churn_prediction.schemas.churn_prediction_input import ChurnPredictionInput
-from tech_challenge_churn_prediction.services.churn_preprocessing_service import ChurnPreprocessingService
-from tech_challenge_churn_prediction.utils.constantes_modelo import ORDEM_FEATURES_RANDOM_FOREST
+from tech_challenge_churn_prediction.schemas.churn_prediction_input import (
+    ChurnPredictionInput,
+)
+from tech_challenge_churn_prediction.services.churn_preprocessing_service import (  # noqa: E501
+    ChurnPreprocessingService,
+)
+from tech_challenge_churn_prediction.utils.constantes_modelo import (
+    ORDEM_FEATURES_RANDOM_FOREST,
+)
 
 
-def test_transformar_gera_as_colunas_na_ordem_esperada_pelo_modelo(payload_valido):
+def test_transformar_gera_as_colunas_na_ordem_esperada_pelo_modelo(
+    payload_valido,
+):
+    """Transformar gera as colunas na ordem esperada pelo modelo."""
     servico = ChurnPreprocessingService()
 
     features = servico.transformar(payload_valido)
@@ -12,7 +21,10 @@ def test_transformar_gera_as_colunas_na_ordem_esperada_pelo_modelo(payload_valid
     assert features.shape == (1, len(ORDEM_FEATURES_RANDOM_FOREST))
 
 
-def test_transformar_soma_corretamente_os_addons_contratados(payload_valido_dict):
+def test_transformar_soma_corretamente_os_addons_contratados(
+    payload_valido_dict,
+):
+    """Transformar soma corretamente os addons contratados."""
     dados = dict(
         payload_valido_dict,
         possui_seguranca_online="No",
@@ -30,7 +42,10 @@ def test_transformar_soma_corretamente_os_addons_contratados(payload_valido_dict
     assert features["quantidade_de_addons"].iloc[0] == 2.0
 
 
-def test_transformar_trata_cliente_sem_servico_de_internet(payload_valido_dict):
+def test_transformar_trata_cliente_sem_servico_de_internet(
+    payload_valido_dict,
+):
+    """Transformar trata cliente sem servico de internet."""
     dados = dict(
         payload_valido_dict,
         possui_servico_de_internet="No",
@@ -52,8 +67,13 @@ def test_transformar_trata_cliente_sem_servico_de_internet(payload_valido_dict):
     assert features["quantidade_de_addons"].iloc[0] == 0.0
 
 
-def test_transformar_codifica_metodo_de_pagamento_em_one_hot(payload_valido_dict):
-    dados = dict(payload_valido_dict, metodo_pagamento="Credit card (automatic)")
+def test_transformar_codifica_metodo_de_pagamento_em_one_hot(
+    payload_valido_dict,
+):
+    """Transformar codifica metodo de pagamento em one hot."""
+    dados = dict(
+        payload_valido_dict, metodo_pagamento="Credit card (automatic)"
+    )
     payload = ChurnPredictionInput(**dados)
     servico = ChurnPreprocessingService()
 
