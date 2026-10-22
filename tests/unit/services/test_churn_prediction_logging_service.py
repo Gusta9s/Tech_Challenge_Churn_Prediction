@@ -2,13 +2,18 @@ import logging
 
 import pandas as pd
 
-from tech_challenge_churn_prediction.schemas.churn_prediction_result import ChurnPredictionResult
-from tech_challenge_churn_prediction.services.churn_prediction_logging_service import (
+from tech_challenge_churn_prediction.schemas.churn_prediction_result import (
+    ChurnPredictionResult,
+)
+from tech_challenge_churn_prediction.services.churn_prediction_logging_service import (  # noqa: E501
     ChurnPredictionLoggingService,
 )
 
 
-def test_registrar_entrada_mascara_os_campos_sensiveis_no_log(payload_valido, caplog):
+def test_registrar_entrada_mascara_os_campos_sensiveis_no_log(
+    payload_valido, caplog
+):
+    """Registrar entrada mascara os campos sensiveis no log."""
     logger = logging.getLogger("teste.churn_prediction_logging.entrada")
     servico = ChurnPredictionLoggingService(logger)
 
@@ -19,7 +24,10 @@ def test_registrar_entrada_mascara_os_campos_sensiveis_no_log(payload_valido, ca
     assert str(payload_valido.cobranca_mensal) not in caplog.text
 
 
-def test_registrar_dados_transformados_loga_a_primeira_linha_do_dataframe(caplog):
+def test_registrar_dados_transformados_loga_a_primeira_linha_do_dataframe(
+    caplog,
+):
+    """Registrar dados transformados loga a primeira linha do dataframe."""
     logger = logging.getLogger("teste.churn_prediction_logging.transformados")
     servico = ChurnPredictionLoggingService(logger)
     features = pd.DataFrame([{"cobranca_mensal": 10.0, "outra_coluna": 1.0}])
@@ -31,9 +39,14 @@ def test_registrar_dados_transformados_loga_a_primeira_linha_do_dataframe(caplog
 
 
 def test_registrar_resultado_predicao_loga_o_resultado_do_modelo(caplog):
+    """Registrar resultado predicao loga o resultado do modelo."""
     logger = logging.getLogger("teste.churn_prediction_logging.resultado")
     servico = ChurnPredictionLoggingService(logger)
-    resultado = ChurnPredictionResult(churn_previsto=True, probabilidade_churn=0.9, probabilidade_nao_churn=0.1)
+    resultado = ChurnPredictionResult(
+        churn_previsto=True,
+        probabilidade_churn=0.9,
+        probabilidade_nao_churn=0.1,
+    )
 
     with caplog.at_level(logging.INFO, logger=logger.name):
         servico.registrar_resultado_predicao(resultado)
@@ -42,9 +55,14 @@ def test_registrar_resultado_predicao_loga_o_resultado_do_modelo(caplog):
 
 
 def test_registrar_resposta_loga_o_payload_de_resposta(caplog):
+    """Registrar resposta loga o payload de resposta."""
     logger = logging.getLogger("teste.churn_prediction_logging.resposta")
     servico = ChurnPredictionLoggingService(logger)
-    resultado = ChurnPredictionResult(churn_previsto=False, probabilidade_churn=0.1, probabilidade_nao_churn=0.9)
+    resultado = ChurnPredictionResult(
+        churn_previsto=False,
+        probabilidade_churn=0.1,
+        probabilidade_nao_churn=0.9,
+    )
 
     with caplog.at_level(logging.INFO, logger=logger.name):
         servico.registrar_resposta(resultado)

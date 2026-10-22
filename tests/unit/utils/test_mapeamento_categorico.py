@@ -5,6 +5,7 @@ from tech_challenge_churn_prediction.utils.mapeamento_categorico import (
 
 
 def test_mapa_binario_com_ausencia_de_servico_contem_as_chaves_esperadas():
+    """Mapa binario com ausencia de servico contem as chaves esperadas."""
     assert MAPA_BINARIO_COM_AUSENCIA_DE_SERVICO == {
         "Yes": 1,
         "No": 0,
@@ -14,4 +15,9 @@ def test_mapa_binario_com_ausencia_de_servico_contem_as_chaves_esperadas():
 
 
 def test_mapa_tipo_contrato_contem_a_ordinalidade_esperada():
-    assert MAPA_TIPO_CONTRATO == {"Month-to-month": 0, "One year": 1, "Two year": 2}
+    """Mapa tipo contrato contem a ordinalidade esperada."""
+    assert MAPA_TIPO_CONTRATO == {
+        "Month-to-month": 0,
+        "One year": 1,
+        "Two year": 2,
+    }

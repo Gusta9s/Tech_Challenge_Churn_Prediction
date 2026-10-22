@@ -13,6 +13,13 @@ router = APIRouter(prefix="/health", tags=["health"])
 
 @router.get("/liveness", response_model=HealthStatus, status_code=200)
 def verificar_liveness() -> HealthStatus:
+    """Endpoint de liveness: confirma que o processo esta ativo.
+
+    Returns
+    -------
+    HealthStatus
+        Status "UP".
+    """
     HealthCheckService.verificar_liveness()
     return HealthStatus(status="UP")
 
@@ -23,5 +30,22 @@ def verificar_readiness(
         obter_health_check_service
     ),
 ) -> HealthStatus:
+    """Endpoint de readiness: confirma que o modelo esta carregado.
+
+    Parameters
+    ----------
+    health_check_service : HealthCheckService
+        Servico injetado responsavel por verificar as dependencias.
+
+    Returns
+    -------
+    HealthStatus
+        Status "UP".
+
+    Raises
+    ------
+    ModeloNaoDisponivelException
+        Se o modelo nao puder ser carregado (resulta em 503).
+    """
     health_check_service.verificar_readiness()
     return HealthStatus(status="UP")
