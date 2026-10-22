@@ -9,10 +9,7 @@ _logging_configurado = False
 
 
 def configurar_logging() -> None:
-    """Configura o logging da aplicacao uma unica vez (idempotente), usando
-    o nivel e formato centralizados em LoggingSettings para todos os loggers
-    obtidos via `obter_logger`.
-    """
+    """Configura o logging da aplicacao de forma idempotente."""
     global _logging_configurado
     if _logging_configurado:
         return
@@ -27,8 +24,17 @@ def configurar_logging() -> None:
 
 
 def obter_logger(nome: str) -> logging.Logger:
-    """Ponto unico de obtencao de logger, garantindo que a configuracao
-    centralizada seja aplicada antes de qualquer uso.
+    """Retorna um logger ja configurado para o nome informado.
+
+    Parameters
+    ----------
+    nome : str
+        Nome do logger (geralmente `__name__` do modulo chamador).
+
+    Returns
+    -------
+    logging.Logger
+        Logger configurado com o nivel e formato centralizados.
     """
     configurar_logging()
     return logging.getLogger(nome)

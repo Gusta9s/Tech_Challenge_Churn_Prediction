@@ -24,22 +24,33 @@ from tech_challenge_churn_prediction.utils.transformadores_sklearn import (
 
 
 class ChurnPreprocessingService:
-    """Responsavel exclusivamente por transformar o payload de uma unica
-    requisicao de predicao nas features esperadas pelo modelo campeao
-    (Random Forest).
+    """Transforma o payload de predicao nas features do modelo campeao.
 
     Todas as regras de transformacao sao centralizadas em um unico
     `sklearn.pipeline.Pipeline` (um `ColumnTransformer` com um encoder/
-    transformer dedicado por grupo de colunas). O pipeline
-    e stateless: os encoders recebem categorias explicitas (nao aprendidas de
-    dados), entao pode ser reaproveitado em qualquer requisicao sem retreinar
-    nada alem da propria validacao de schema.
+    transformer dedicado por grupo de colunas). O pipeline e stateless:
+    os encoders recebem categorias explicitas (nao aprendidas de
+    dados), entao pode ser reaproveitado em qualquer requisicao sem
+    retreinar nada alem da propria validacao de schema.
     """
 
     def __init__(self) -> None:
+        """Constroi e armazena o pipeline de pre-processamento."""
         self._pipeline = self._construir_pipeline()
 
     def transformar(self, payload: ChurnPredictionInput) -> pd.DataFrame:
+        """Transforma o payload de entrada nas features do modelo.
+
+        Parameters
+        ----------
+        payload : ChurnPredictionInput
+            Dados brutos de um cliente.
+
+        Returns
+        -------
+        pandas.DataFrame
+            Features codificadas, na ordem esperada pelo modelo.
+        """
         dados_brutos = pd.DataFrame([payload.model_dump()])
         features_transformadas = self._pipeline.fit_transform(dados_brutos)
         return pd.DataFrame(
@@ -48,6 +59,13 @@ class ChurnPreprocessingService:
 
     @staticmethod
     def _construir_pipeline() -> Pipeline:
+        """Monta o pipeline de pre-processamento com encoders explicitos.
+
+        Returns
+        -------
+        sklearn.pipeline.Pipeline
+            Pipeline stateless pronto para transformar um payload.
+        """
         codificador_features = ColumnTransformer(
             transformers=[
                 (

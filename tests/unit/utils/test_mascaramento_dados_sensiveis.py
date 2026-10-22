@@ -1,18 +1,30 @@
-from tech_challenge_churn_prediction.config.security_settings import SecuritySettings
-from tech_challenge_churn_prediction.utils import mascaramento_dados_sensiveis as alvo
+from tech_challenge_churn_prediction.config.security_settings import (
+    SecuritySettings,
+)
+from tech_challenge_churn_prediction.utils import (
+    mascaramento_dados_sensiveis as alvo,
+)
 
 
 def test_mascara_apenas_os_campos_configurados_como_sensiveis(monkeypatch):
-    configuracoes = SecuritySettings(campos_sensiveis=frozenset({"senha"}), mascara_padrao="[OCULTO]")
+    """Mascara apenas os campos configurados como sensiveis."""
+    configuracoes = SecuritySettings(
+        campos_sensiveis=frozenset({"senha"}), mascara_padrao="[OCULTO]"
+    )
     monkeypatch.setattr(alvo, "obter_security_settings", lambda: configuracoes)
 
-    resultado = alvo.mascarar_campos_sensiveis({"usuario": "joao", "senha": "123"})
+    resultado = alvo.mascarar_campos_sensiveis(
+        {"usuario": "joao", "senha": "123"}
+    )
 
     assert resultado == {"usuario": "joao", "senha": "[OCULTO]"}
 
 
 def test_nao_altera_valores_quando_nenhum_campo_e_sensivel(monkeypatch):
-    configuracoes = SecuritySettings(campos_sensiveis=frozenset(), mascara_padrao="[OCULTO]")
+    """Nao altera valores quando nenhum campo e sensivel."""
+    configuracoes = SecuritySettings(
+        campos_sensiveis=frozenset(), mascara_padrao="[OCULTO]"
+    )
     monkeypatch.setattr(alvo, "obter_security_settings", lambda: configuracoes)
 
     resultado = alvo.mascarar_campos_sensiveis({"a": 1, "b": 2})
@@ -21,7 +33,10 @@ def test_nao_altera_valores_quando_nenhum_campo_e_sensivel(monkeypatch):
 
 
 def test_nao_modifica_o_dicionario_original(monkeypatch):
-    configuracoes = SecuritySettings(campos_sensiveis=frozenset({"senha"}), mascara_padrao="[OCULTO]")
+    """Nao modifica o dicionario original."""
+    configuracoes = SecuritySettings(
+        campos_sensiveis=frozenset({"senha"}), mascara_padrao="[OCULTO]"
+    )
     monkeypatch.setattr(alvo, "obter_security_settings", lambda: configuracoes)
     original = {"senha": "123"}
 

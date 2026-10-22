@@ -4,10 +4,18 @@ from tech_challenge_churn_prediction.config.security_settings import (
 
 
 def mascarar_campos_sensiveis(dados: dict) -> dict:
-    """Retorna uma copia do dicionario com os valores dos campos sensiveis
-    (definidos em SecuritySettings) substituidos por uma mascara fixa, para
-    uso seguro em logs (nao altera o dicionario original nem os dados usados
-    no fluxo de processamento).
+    """Mascara os valores dos campos sensiveis de um dicionario para log.
+
+    Parameters
+    ----------
+    dados : dict
+        Dicionario original, nao modificado por esta funcao.
+
+    Returns
+    -------
+    dict
+        Copia de `dados` com os campos sensiveis (definidos em
+        SecuritySettings) substituidos pela mascara configurada.
     """
     configuracoes_seguranca = obter_security_settings()
     return {

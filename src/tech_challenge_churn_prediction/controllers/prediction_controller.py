@@ -48,6 +48,33 @@ def prever_churn(
         obter_prediction_logging_service
     ),
 ) -> ChurnPredictionResult:
+    """Endpoint de predicao: transforma o payload e executa o modelo.
+
+    Parameters
+    ----------
+    payload : ChurnPredictionInput
+        Dados brutos de um cliente para a predicao de churn.
+    preprocessing_service : ChurnPreprocessingService
+        Servico injetado responsavel por transformar o payload.
+    model_loader_service : ModelLoaderService
+        Servico injetado responsavel por carregar o modelo campeao.
+    prediction_service : ChurnPredictionService
+        Servico injetado responsavel por executar a predicao.
+    logging_service : ChurnPredictionLoggingService
+        Servico injetado responsavel por logar o ciclo da requisicao.
+
+    Returns
+    -------
+    ChurnPredictionResult
+        Resultado da predicao de churn.
+
+    Raises
+    ------
+    PreProcessamentoException
+        Se o payload nao puder ser transformado (resulta em 400).
+    PredicaoException
+        Se o modelo nao carregar ou a predicao falhar (resulta em 500).
+    """
     logging_service.registrar_entrada(payload)
 
     try:

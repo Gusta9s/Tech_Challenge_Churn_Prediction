@@ -15,17 +15,23 @@ from tech_challenge_churn_prediction.utils.versionamento_modelo import (
 
 
 class ModelLoaderService:
-    """Responsavel exclusivamente por carregar o artefato do modelo
-    treinado (.joblib).
+    """Carrega o artefato do modelo campeao treinado (.joblib).
 
-    A versao do modelo e resolvida dinamicamente (maior versao semantica
-    disponivel em `ModelSettings.diretorio_modelos`), nao conhece nada sobre
-    pre-processamento ou predicao, apenas entrega um estimador sklearn
-    pronto para uso, mantendo o carregamento desacoplado do restante do
-    fluxo de inferencia.
+    A versao do modelo e resolvida dinamicamente (maior versao
+    semantica disponivel em `ModelSettings.diretorio_modelos`), nao
+    conhece nada sobre pre-processamento ou predicao, apenas entrega um
+    estimador sklearn pronto para uso.
     """
 
     def __init__(self, caminho_modelo: Path | None = None) -> None:
+        """Resolve o caminho do modelo a carregar.
+
+        Parameters
+        ----------
+        caminho_modelo : pathlib.Path or None, default=None
+            Caminho explicito do artefato `.joblib`. Se None, resolve
+            dinamicamente a versao mais recente em `ModelSettings`.
+        """
         self._caminho_modelo = (
             caminho_modelo or self._resolver_caminho_modelo_campeao()
         )
@@ -33,6 +39,13 @@ class ModelLoaderService:
 
     @staticmethod
     def _resolver_caminho_modelo_campeao() -> Path:
+        """Resolve dinamicamente o caminho do artefato do modelo campeao.
+
+        Returns
+        -------
+        pathlib.Path
+            Caminho do arquivo `.joblib` da versao mais recente.
+        """
         configuracoes_modelo = obter_model_settings()
         diretorio_modelos = (
             encontrar_raiz_projeto() / configuracoes_modelo.diretorio_modelos
@@ -46,8 +59,17 @@ class ModelLoaderService:
         )
 
     def carregar(self) -> BaseEstimator:
-        """Carrega o modelo uma unica vez e reutiliza a instancia em memoria
-        nas chamadas subsequentes (evita custo de I/O repetido por requisicao).
+        """Carrega o modelo, reutilizando a instancia a partir do cache.
+
+        Returns
+        -------
+        sklearn.base.BaseEstimator
+            Estimador treinado, pronto para predicao.
+
+        Raises
+        ------
+        FileNotFoundError
+            Se o arquivo do modelo nao existir no caminho resolvido.
         """
         if self._modelo is None:
             if not self._caminho_modelo.exists():

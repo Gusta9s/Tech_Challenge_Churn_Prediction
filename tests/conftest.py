@@ -1,8 +1,18 @@
 import pytest
 
-from tech_challenge_churn_prediction.config import app_settings, logging_settings, model_settings, security_settings
+from tech_challenge_churn_prediction.config import (
+    app_settings,
+    cors_settings,
+    logging_settings,
+    model_settings,
+    prediction_settings,
+    rate_limit_settings,
+    security_settings,
+)
 from tech_challenge_churn_prediction.controllers import dependencies
-from tech_challenge_churn_prediction.schemas.churn_prediction_input import ChurnPredictionInput
+from tech_challenge_churn_prediction.schemas.churn_prediction_input import (
+    ChurnPredictionInput,
+)
 
 
 @pytest.fixture(autouse=True)
@@ -12,8 +22,11 @@ def limpar_caches_de_singletons():
     """
     getters_com_cache = [
         app_settings.obter_app_settings,
+        cors_settings.obter_cors_settings,
         logging_settings.obter_logging_settings,
         model_settings.obter_model_settings,
+        prediction_settings.obter_prediction_settings,
+        rate_limit_settings.obter_rate_limit_settings,
         security_settings.obter_security_settings,
         dependencies.obter_model_loader_service,
         dependencies.obter_preprocessing_service,
