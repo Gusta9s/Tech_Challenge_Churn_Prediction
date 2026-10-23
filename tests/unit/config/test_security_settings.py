@@ -1,6 +1,6 @@
 from tech_challenge_churn_prediction.config.security_settings import (
     SecuritySettings,
-    obter_security_settings,
+    SecuritySettingsFactory,
 )
 
 
@@ -14,9 +14,9 @@ def test_security_settings_constroi_a_partir_dos_valores_informados():
     assert configuracoes.mascara_padrao == "[OCULTO]"
 
 
-def test_obter_security_settings_retorna_singleton():
-    """Obter security settings retorna singleton."""
-    primeira_chamada = obter_security_settings()
-    segunda_chamada = obter_security_settings()
+def test_security_settings_factory_criar_retorna_singleton():
+    """Security settings factory criar retorna singleton."""
+    primeira_chamada = SecuritySettingsFactory.criar()
+    segunda_chamada = SecuritySettingsFactory.criar()
 
     assert primeira_chamada is segunda_chamada

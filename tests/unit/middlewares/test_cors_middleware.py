@@ -13,8 +13,8 @@ ORIGEM_NAO_PERMITIDA = "http://origem-nao-cadastrada.exemplo:9999"
 
 def _criar_client(monkeypatch) -> TestClient:
     monkeypatch.setattr(
-        alvo,
-        "obter_cors_settings",
+        alvo.CorsSettingsFactory,
+        "criar",
         lambda: CorsSettings(
             origens_permitidas=(ORIGEM_PERMITIDA,),
             metodos_permitidos=("GET", "POST"),

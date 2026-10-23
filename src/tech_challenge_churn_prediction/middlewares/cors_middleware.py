@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from tech_challenge_churn_prediction.config.cors_settings import (
-    obter_cors_settings,
+    CorsSettingsFactory,
 )
 
 
@@ -19,7 +19,7 @@ def configurar_cors(app: FastAPI) -> None:
     app : FastAPI
         Instancia da aplicacao onde o middleware sera registrado.
     """
-    configuracoes_cors = obter_cors_settings()
+    configuracoes_cors = CorsSettingsFactory.criar()
     app.add_middleware(
         CORSMiddleware,
         allow_origins=list(configuracoes_cors.origens_permitidas),

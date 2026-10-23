@@ -4,7 +4,7 @@ import joblib
 from sklearn.base import BaseEstimator
 
 from tech_challenge_churn_prediction.config.model_settings import (
-    obter_model_settings,
+    ModelSettingsFactory,
 )
 from tech_challenge_churn_prediction.utils.caminho_projeto import (
     encontrar_raiz_projeto,
@@ -46,7 +46,7 @@ class ModelLoaderService:
         pathlib.Path
             Caminho do arquivo `.joblib` da versao mais recente.
         """
-        configuracoes_modelo = obter_model_settings()
+        configuracoes_modelo = ModelSettingsFactory.criar()
         diretorio_modelos = (
             encontrar_raiz_projeto() / configuracoes_modelo.diretorio_modelos
         )

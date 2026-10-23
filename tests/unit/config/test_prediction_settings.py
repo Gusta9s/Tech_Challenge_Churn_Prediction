@@ -1,6 +1,6 @@
 from tech_challenge_churn_prediction.config.prediction_settings import (
     PredictionSettings,
-    obter_prediction_settings,
+    PredictionSettingsFactory,
 )
 
 
@@ -11,9 +11,9 @@ def test_prediction_settings_constroi_a_partir_dos_valores_informados():
     assert configuracoes.limiar_decisao_churn == 0.42
 
 
-def test_obter_prediction_settings_retorna_singleton():
-    """Obter prediction settings retorna singleton."""
-    primeira_chamada = obter_prediction_settings()
-    segunda_chamada = obter_prediction_settings()
+def test_prediction_settings_factory_criar_retorna_singleton():
+    """Prediction settings factory criar retorna singleton."""
+    primeira_chamada = PredictionSettingsFactory.criar()
+    segunda_chamada = PredictionSettingsFactory.criar()
 
     assert primeira_chamada is segunda_chamada

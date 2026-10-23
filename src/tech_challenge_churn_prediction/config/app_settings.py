@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -26,13 +24,20 @@ class AppSettings(BaseSettings):
     versao: str
 
 
-@lru_cache
-def obter_app_settings() -> AppSettings:
-    """Retorna a instancia singleton de AppSettings.
+class AppSettingsFactory:
+    """Fabrica responsavel por criar a instancia singleton de AppSettings."""
 
-    Returns
-    -------
-    AppSettings
-        Configuracoes gerais da aplicacao.
-    """
-    return AppSettings()
+    _instancia: AppSettings | None = None
+
+    @classmethod
+    def criar(cls) -> AppSettings:
+        """Cria (ou reutiliza) a instancia singleton de AppSettings.
+
+        Returns
+        -------
+        AppSettings
+            Configuracoes gerais da aplicacao.
+        """
+        if cls._instancia is None:
+            cls._instancia = AppSettings()
+        return cls._instancia

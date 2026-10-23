@@ -16,42 +16,51 @@ from tech_challenge_churn_prediction.services.model_loader_service import (
 )
 
 
-def test_obter_model_loader_service_retorna_singleton_do_tipo_esperado():
-    """Obter model loader service retorna singleton do tipo esperado."""
-    assert isinstance(alvo.obter_model_loader_service(), ModelLoaderService)
-    assert (
-        alvo.obter_model_loader_service() is alvo.obter_model_loader_service()
-    )
-
-
-def test_obter_preprocessing_service_retorna_singleton_do_tipo_esperado():
-    """Obter preprocessing service retorna singleton do tipo esperado."""
+def test_model_loader_service_factory_criar_retorna_singleton():
+    """Model loader service factory criar retorna singleton."""
     assert isinstance(
-        alvo.obter_preprocessing_service(), ChurnPreprocessingService
+        alvo.ModelLoaderServiceFactory.criar(), ModelLoaderService
     )
     assert (
-        alvo.obter_preprocessing_service()
-        is alvo.obter_preprocessing_service()
+        alvo.ModelLoaderServiceFactory.criar()
+        is alvo.ModelLoaderServiceFactory.criar()
     )
 
 
-def test_obter_prediction_service_retorna_singleton_do_tipo_esperado():
-    """Obter prediction service retorna singleton do tipo esperado."""
-    assert isinstance(alvo.obter_prediction_service(), ChurnPredictionService)
-    assert alvo.obter_prediction_service() is alvo.obter_prediction_service()
+def test_churn_preprocessing_service_factory_criar_retorna_singleton():
+    """Churn preprocessing service factory criar retorna singleton."""
+    assert isinstance(
+        alvo.ChurnPreprocessingServiceFactory.criar(),
+        ChurnPreprocessingService,
+    )
+    assert (
+        alvo.ChurnPreprocessingServiceFactory.criar()
+        is alvo.ChurnPreprocessingServiceFactory.criar()
+    )
 
 
-def test_obter_health_check_service_retorna_singleton_com_dependencia():
-    """Obter health check service retorna singleton com dependencia."""
-    servico = alvo.obter_health_check_service()
+def test_churn_prediction_service_factory_criar_retorna_singleton():
+    """Churn prediction service factory criar retorna singleton."""
+    assert isinstance(
+        alvo.ChurnPredictionServiceFactory.criar(), ChurnPredictionService
+    )
+    assert (
+        alvo.ChurnPredictionServiceFactory.criar()
+        is alvo.ChurnPredictionServiceFactory.criar()
+    )
+
+
+def test_health_check_service_factory_criar_retorna_singleton():
+    """Health check service factory criar retorna singleton."""
+    servico = alvo.HealthCheckServiceFactory.criar()
 
     assert isinstance(servico, HealthCheckService)
-    assert servico is alvo.obter_health_check_service()
+    assert servico is alvo.HealthCheckServiceFactory.criar()
 
 
-def test_obter_prediction_logging_service_retorna_singleton_do_tipo_esperado():
-    """Obter prediction logging service retorna singleton do tipo esperado."""
-    servico = alvo.obter_prediction_logging_service()
+def test_churn_prediction_logging_service_factory_criar_retorna_singleton():
+    """Churn prediction logging service factory criar retorna singleton."""
+    servico = alvo.ChurnPredictionLoggingServiceFactory.criar()
 
     assert isinstance(servico, ChurnPredictionLoggingService)
-    assert servico is alvo.obter_prediction_logging_service()
+    assert servico is alvo.ChurnPredictionLoggingServiceFactory.criar()

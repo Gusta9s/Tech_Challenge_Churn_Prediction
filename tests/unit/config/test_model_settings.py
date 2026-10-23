@@ -1,6 +1,6 @@
 from tech_challenge_churn_prediction.config.model_settings import (
     ModelSettings,
-    obter_model_settings,
+    ModelSettingsFactory,
 )
 
 
@@ -14,9 +14,9 @@ def test_model_settings_constroi_a_partir_dos_valores_informados():
     assert configuracoes.nome_arquivo_modelo == "modelo.joblib"
 
 
-def test_obter_model_settings_retorna_singleton():
-    """Obter model settings retorna singleton."""
-    primeira_chamada = obter_model_settings()
-    segunda_chamada = obter_model_settings()
+def test_model_settings_factory_criar_retorna_singleton():
+    """Model settings factory criar retorna singleton."""
+    primeira_chamada = ModelSettingsFactory.criar()
+    segunda_chamada = ModelSettingsFactory.criar()
 
     assert primeira_chamada is segunda_chamada

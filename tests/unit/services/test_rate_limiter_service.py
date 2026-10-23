@@ -3,8 +3,12 @@ import asyncio
 from tech_challenge_churn_prediction.services import (
     rate_limiter_service as alvo,
 )
+from tech_challenge_churn_prediction.config.rate_limit_settings import (
+    RateLimitSettings,
+)
 from tech_challenge_churn_prediction.services.rate_limiter_service import (
     RateLimiterService,
+    RateLimiterServiceFactory,
 )
 
 
@@ -78,3 +82,26 @@ def test_mantem_historicos_isolados_por_cliente(monkeypatch):
 
     assert permitido_cliente_a is True
     assert permitido_cliente_b is True
+
+
+def test_rate_limiter_service_factory_criar_retorna_singleton_configurado(
+    monkeypatch,
+):
+    """Rate limiter service factory criar retorna singleton configurado."""
+    monkeypatch.setattr(
+        alvo.RateLimitSettingsFactory,
+        "criar",
+        lambda: RateLimitSettings(
+            limite_requisicoes=3,
+            janela_em_segundos=45,
+            cabecalho_requisicoes_restantes="X-Teste-Restantes",
+        ),
+    )
+
+    primeira_chamada = RateLimiterServiceFactory.criar()
+    segunda_chamada = RateLimiterServiceFactory.criar()
+
+    assert isinstance(primeira_chamada, RateLimiterService)
+    assert primeira_chamada is segunda_chamada
+    assert primeira_chamada._limite_requisicoes == 3
+    assert primeira_chamada._janela_em_segundos == 45
