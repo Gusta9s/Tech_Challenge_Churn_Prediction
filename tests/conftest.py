@@ -1,44 +1,68 @@
 import pytest
 
-from tech_challenge_churn_prediction.config import (
-    app_settings,
-    cors_settings,
-    logging_settings,
-    model_settings,
-    prediction_settings,
-    rate_limit_settings,
-    security_settings,
+from tech_challenge_churn_prediction.config.app_settings import (
+    AppSettingsFactory,
 )
-from tech_challenge_churn_prediction.controllers import dependencies
+from tech_challenge_churn_prediction.config.cors_settings import (
+    CorsSettingsFactory,
+)
+from tech_challenge_churn_prediction.config.logging_settings import (
+    LoggingSettingsFactory,
+)
+from tech_challenge_churn_prediction.config.model_settings import (
+    ModelSettingsFactory,
+)
+from tech_challenge_churn_prediction.config.prediction_settings import (
+    PredictionSettingsFactory,
+)
+from tech_challenge_churn_prediction.config.rate_limit_settings import (
+    RateLimitSettingsFactory,
+)
+from tech_challenge_churn_prediction.config.security_settings import (
+    SecuritySettingsFactory,
+)
+from tech_challenge_churn_prediction.controllers.dependencies import (
+    ChurnPredictionLoggingServiceFactory,
+    ChurnPredictionServiceFactory,
+    ChurnPreprocessingServiceFactory,
+    HealthCheckServiceFactory,
+    ModelLoaderServiceFactory,
+)
 from tech_challenge_churn_prediction.schemas.churn_prediction_input import (
     ChurnPredictionInput,
+)
+from tech_challenge_churn_prediction.services.rate_limiter_service import (
+    RateLimiterServiceFactory,
+)
+
+FABRICAS_COM_SINGLETON = (
+    AppSettingsFactory,
+    CorsSettingsFactory,
+    LoggingSettingsFactory,
+    ModelSettingsFactory,
+    PredictionSettingsFactory,
+    RateLimitSettingsFactory,
+    SecuritySettingsFactory,
+    ModelLoaderServiceFactory,
+    ChurnPreprocessingServiceFactory,
+    ChurnPredictionServiceFactory,
+    HealthCheckServiceFactory,
+    ChurnPredictionLoggingServiceFactory,
+    RateLimiterServiceFactory,
 )
 
 
 @pytest.fixture(autouse=True)
 def limpar_caches_de_singletons():
-    """Isola os testes entre si limpando os singletons via lru_cache antes e
-    depois de cada teste, evitando que o estado de um teste vaze para outro.
+    """Isola os testes entre si limpando os singletons das factories antes
+    e depois de cada teste, evitando que o estado de um teste vaze para
+    outro.
     """
-    getters_com_cache = [
-        app_settings.obter_app_settings,
-        cors_settings.obter_cors_settings,
-        logging_settings.obter_logging_settings,
-        model_settings.obter_model_settings,
-        prediction_settings.obter_prediction_settings,
-        rate_limit_settings.obter_rate_limit_settings,
-        security_settings.obter_security_settings,
-        dependencies.obter_model_loader_service,
-        dependencies.obter_preprocessing_service,
-        dependencies.obter_prediction_service,
-        dependencies.obter_health_check_service,
-        dependencies.obter_prediction_logging_service,
-    ]
-    for getter in getters_com_cache:
-        getter.cache_clear()
+    for fabrica in FABRICAS_COM_SINGLETON:
+        fabrica._instancia = None
     yield
-    for getter in getters_com_cache:
-        getter.cache_clear()
+    for fabrica in FABRICAS_COM_SINGLETON:
+        fabrica._instancia = None
 
 
 @pytest.fixture

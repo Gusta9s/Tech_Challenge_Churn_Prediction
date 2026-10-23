@@ -2,7 +2,7 @@ import logging
 import sys
 
 from tech_challenge_churn_prediction.config.logging_settings import (
-    obter_logging_settings,
+    LoggingSettingsFactory,
 )
 
 _logging_configurado = False
@@ -14,7 +14,7 @@ def configurar_logging() -> None:
     if _logging_configurado:
         return
 
-    configuracoes = obter_logging_settings()
+    configuracoes = LoggingSettingsFactory.criar()
     logging.basicConfig(
         level=configuracoes.nivel,
         format=configuracoes.formato,

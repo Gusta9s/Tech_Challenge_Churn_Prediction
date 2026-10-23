@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 
 from tech_challenge_churn_prediction.controllers.dependencies import (
-    obter_model_loader_service,
-    obter_prediction_logging_service,
-    obter_prediction_service,
-    obter_preprocessing_service,
+    ChurnPredictionLoggingServiceFactory,
+    ChurnPredictionServiceFactory,
+    ChurnPreprocessingServiceFactory,
+    ModelLoaderServiceFactory,
 )
 from tech_challenge_churn_prediction.exceptions.app_exceptions import (
     PredicaoException,
@@ -36,16 +36,16 @@ router = APIRouter(prefix="/predict", tags=["predict"])
 def prever_churn(
     payload: ChurnPredictionInput,
     preprocessing_service: ChurnPreprocessingService = Depends(
-        obter_preprocessing_service
+        ChurnPreprocessingServiceFactory.criar
     ),
     model_loader_service: ModelLoaderService = Depends(
-        obter_model_loader_service
+        ModelLoaderServiceFactory.criar
     ),
     prediction_service: ChurnPredictionService = Depends(
-        obter_prediction_service
+        ChurnPredictionServiceFactory.criar
     ),
     logging_service: ChurnPredictionLoggingService = Depends(
-        obter_prediction_logging_service
+        ChurnPredictionLoggingServiceFactory.criar
     ),
 ) -> ChurnPredictionResult:
     """Endpoint de predicao: transforma o payload e executa o modelo.

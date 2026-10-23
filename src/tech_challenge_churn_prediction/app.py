@@ -1,13 +1,13 @@
 from fastapi import FastAPI
 
 from tech_challenge_churn_prediction.config.app_settings import (
-    obter_app_settings,
+    AppSettingsFactory,
 )
 from tech_challenge_churn_prediction.config.logging_config import (
     configurar_logging,
 )
 from tech_challenge_churn_prediction.config.rate_limit_settings import (
-    obter_rate_limit_settings,
+    RateLimitSettingsFactory,
 )
 from tech_challenge_churn_prediction.controllers.health_controller import (
     router as health_router,
@@ -25,46 +25,46 @@ from tech_challenge_churn_prediction.middlewares.rate_limit_middleware import (
     RateLimitMiddleware,
 )
 from tech_challenge_churn_prediction.services.rate_limiter_service import (
-    RateLimiterService,
+    RateLimiterServiceFactory,
 )
 
 
-def criar_app() -> FastAPI:
-    """Monta a aplicacao FastAPI com routers, middlewares e handlers.
+class AppFactory:
+    """Fabrica responsavel por montar a aplicacao FastAPI completa."""
 
-    Returns
-    -------
-    FastAPI
-        Aplicacao pronta para ser servida pelo uvicorn.
-    """
-    configurar_logging()
+    @staticmethod
+    def criar() -> FastAPI:
+        """Monta a aplicacao FastAPI com routers, middlewares e handlers.
 
-    configuracoes_app = obter_app_settings()
-    app = FastAPI(
-        title=configuracoes_app.titulo, version=configuracoes_app.versao
-    )
-    app.include_router(health_router)
-    app.include_router(prediction_router)
-    registrar_exception_handlers(app)
+        Returns
+        -------
+        FastAPI
+            Aplicacao pronta para ser servida pelo uvicorn.
+        """
+        configurar_logging()
 
-    configuracoes_rate_limit = obter_rate_limit_settings()
-    rate_limiter_service = RateLimiterService(
-        limite_requisicoes=configuracoes_rate_limit.limite_requisicoes,
-        janela_em_segundos=configuracoes_rate_limit.janela_em_segundos,
-    )
-    app.add_middleware(
-        RateLimitMiddleware,
-        rate_limiter_service=rate_limiter_service,
-        cabecalho_requisicoes_restantes=(
-            configuracoes_rate_limit.cabecalho_requisicoes_restantes
-        ),
-    )
-    # Registrado por ultimo para ficar na camada mais externa, garantindo
-    # que os cabecalhos de CORS sejam aplicados mesmo em respostas 429
-    # geradas pelo RateLimitMiddleware.
-    configurar_cors(app)
+        configuracoes_app = AppSettingsFactory.criar()
+        app = FastAPI(
+            title=configuracoes_app.titulo, version=configuracoes_app.versao
+        )
+        app.include_router(health_router)
+        app.include_router(prediction_router)
+        registrar_exception_handlers(app)
 
-    return app
+        configuracoes_rate_limit = RateLimitSettingsFactory.criar()
+        app.add_middleware(
+            RateLimitMiddleware,
+            rate_limiter_service=RateLimiterServiceFactory.criar(),
+            cabecalho_requisicoes_restantes=(
+                configuracoes_rate_limit.cabecalho_requisicoes_restantes
+            ),
+        )
+        # Registrado por ultimo para ficar na camada mais externa,
+        # garantindo que os cabecalhos de CORS sejam aplicados mesmo em
+        # respostas 429 geradas pelo RateLimitMiddleware.
+        configurar_cors(app)
+
+        return app
 
 
-app = criar_app()
+app = AppFactory.criar()

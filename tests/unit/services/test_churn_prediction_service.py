@@ -28,8 +28,8 @@ class ModeloFalso:
 
 def _criar_servico(monkeypatch) -> ChurnPredictionService:
     monkeypatch.setattr(
-        alvo,
-        "obter_prediction_settings",
+        alvo.PredictionSettingsFactory,
+        "criar",
         lambda: PredictionSettings(limiar_decisao_churn=LIMIAR_FICTICIO),
     )
     return ChurnPredictionService()

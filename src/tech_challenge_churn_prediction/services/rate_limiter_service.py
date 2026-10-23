@@ -3,6 +3,10 @@ import math
 import time
 from collections import defaultdict
 
+from tech_challenge_churn_prediction.config.rate_limit_settings import (
+    RateLimitSettingsFactory,
+)
+
 
 class RateLimiterService:
     """Controla o limite de requisicoes por cliente em uma janela deslizante.
@@ -122,3 +126,30 @@ class RateLimiterService:
         ]
         for timestamp in timestamps_antigos:
             del historico_cliente[timestamp]
+
+
+class RateLimiterServiceFactory:
+    """Fabrica responsavel pela instancia singleton de RateLimiterService."""
+
+    _instancia: RateLimiterService | None = None
+
+    @classmethod
+    def criar(cls) -> RateLimiterService:
+        """Cria (ou reutiliza) a instancia singleton de RateLimiterService.
+
+        Le o limite e a janela de RateLimitSettings, mantendo a mesma
+        instancia (e portanto o mesmo historico em memoria) entre
+        chamadas, essencial para o rate limiting funcionar corretamente.
+
+        Returns
+        -------
+        RateLimiterService
+            Servico de controle de limite de requisicoes por cliente.
+        """
+        if cls._instancia is None:
+            configuracoes = RateLimitSettingsFactory.criar()
+            cls._instancia = RateLimiterService(
+                limite_requisicoes=configuracoes.limite_requisicoes,
+                janela_em_segundos=configuracoes.janela_em_segundos,
+            )
+        return cls._instancia

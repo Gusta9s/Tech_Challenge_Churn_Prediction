@@ -1,11 +1,10 @@
-"""Fabrica centralizada de dependencias dos controllers.
+"""Fabricas centralizadas de dependencias dos controllers.
 
-Cada servico e instanciado uma unica vez (singleton via lru_cache) e
-injetado nos controllers via FastAPI `Depends`, mantendo os controllers
-desacoplados da construcao/ciclo de vida dos servicos.
+Cada servico e construido por uma Factory dedicada, que mantem a
+instancia singleton e a entrega pronta para uso. As factories sao
+injetadas nos controllers via FastAPI `Depends`, mantendo os
+controllers desacoplados da construcao/ciclo de vida dos servicos.
 """
-
-from functools import lru_cache
 
 from tech_challenge_churn_prediction.config.logging_config import obter_logger
 from tech_challenge_churn_prediction.services.churn_prediction_logging_service import (  # noqa: E501
@@ -24,64 +23,108 @@ from tech_challenge_churn_prediction.services.model_loader_service import (
     ModelLoaderService,
 )
 
+NOME_LOGGER_PREDICAO = "tech_challenge_churn_prediction.predict"
 
-@lru_cache
-def obter_model_loader_service() -> ModelLoaderService:
-    """Retorna a instancia singleton de ModelLoaderService.
 
-    Returns
-    -------
-    ModelLoaderService
-        Servico responsavel por carregar o modelo campeao.
+class ModelLoaderServiceFactory:
+    """Fabrica responsavel pela instancia singleton de ModelLoaderService."""
+
+    _instancia: ModelLoaderService | None = None
+
+    @classmethod
+    def criar(cls) -> ModelLoaderService:
+        """Cria (ou reutiliza) a instancia singleton de ModelLoaderService.
+
+        Returns
+        -------
+        ModelLoaderService
+            Servico responsavel por carregar o modelo campeao.
+        """
+        if cls._instancia is None:
+            cls._instancia = ModelLoaderService()
+        return cls._instancia
+
+
+class ChurnPreprocessingServiceFactory:
+    """Fabrica responsavel pela instancia singleton de
+    ChurnPreprocessingService.
     """
-    return ModelLoaderService()
+
+    _instancia: ChurnPreprocessingService | None = None
+
+    @classmethod
+    def criar(cls) -> ChurnPreprocessingService:
+        """Cria (ou reutiliza) o singleton de ChurnPreprocessingService.
+
+        Returns
+        -------
+        ChurnPreprocessingService
+            Servico responsavel por pre-processar o payload de entrada.
+        """
+        if cls._instancia is None:
+            cls._instancia = ChurnPreprocessingService()
+        return cls._instancia
 
 
-@lru_cache
-def obter_preprocessing_service() -> ChurnPreprocessingService:
-    """Retorna a instancia singleton de ChurnPreprocessingService.
+class ChurnPredictionServiceFactory:
+    """Fabrica responsavel pelo singleton de ChurnPredictionService."""
 
-    Returns
-    -------
-    ChurnPreprocessingService
-        Servico responsavel por pre-processar o payload de entrada.
+    _instancia: ChurnPredictionService | None = None
+
+    @classmethod
+    def criar(cls) -> ChurnPredictionService:
+        """Cria (ou reutiliza) a instancia singleton de ChurnPredictionService.
+
+        Returns
+        -------
+        ChurnPredictionService
+            Servico responsavel por executar a predicao do modelo.
+        """
+        if cls._instancia is None:
+            cls._instancia = ChurnPredictionService()
+        return cls._instancia
+
+
+class HealthCheckServiceFactory:
+    """Fabrica responsavel pela instancia singleton de HealthCheckService."""
+
+    _instancia: HealthCheckService | None = None
+
+    @classmethod
+    def criar(cls) -> HealthCheckService:
+        """Cria (ou reutiliza) a instancia singleton de HealthCheckService.
+
+        Returns
+        -------
+        HealthCheckService
+            Servico responsavel pelas verificacoes de liveness/readiness.
+        """
+        if cls._instancia is None:
+            cls._instancia = HealthCheckService(
+                ModelLoaderServiceFactory.criar()
+            )
+        return cls._instancia
+
+
+class ChurnPredictionLoggingServiceFactory:
+    """Fabrica responsavel pela instancia singleton de
+    ChurnPredictionLoggingService.
     """
-    return ChurnPreprocessingService()
 
+    _instancia: ChurnPredictionLoggingService | None = None
 
-@lru_cache
-def obter_prediction_service() -> ChurnPredictionService:
-    """Retorna a instancia singleton de ChurnPredictionService.
+    @classmethod
+    def criar(cls) -> ChurnPredictionLoggingService:
+        """Cria (ou reutiliza) a instancia singleton de
+        ChurnPredictionLoggingService.
 
-    Returns
-    -------
-    ChurnPredictionService
-        Servico responsavel por executar a predicao do modelo.
-    """
-    return ChurnPredictionService()
-
-
-@lru_cache
-def obter_health_check_service() -> HealthCheckService:
-    """Retorna a instancia singleton de HealthCheckService.
-
-    Returns
-    -------
-    HealthCheckService
-        Servico responsavel pelas verificacoes de liveness/readiness.
-    """
-    return HealthCheckService(obter_model_loader_service())
-
-
-@lru_cache
-def obter_prediction_logging_service() -> ChurnPredictionLoggingService:
-    """Retorna a instancia singleton de ChurnPredictionLoggingService.
-
-    Returns
-    -------
-    ChurnPredictionLoggingService
-        Servico responsavel por logar o ciclo de vida da predicao.
-    """
-    return ChurnPredictionLoggingService(
-        obter_logger("tech_challenge_churn_prediction.predict")
-    )
+        Returns
+        -------
+        ChurnPredictionLoggingService
+            Servico responsavel por logar o ciclo de vida da predicao.
+        """
+        if cls._instancia is None:
+            cls._instancia = ChurnPredictionLoggingService(
+                obter_logger(NOME_LOGGER_PREDICAO)
+            )
+        return cls._instancia

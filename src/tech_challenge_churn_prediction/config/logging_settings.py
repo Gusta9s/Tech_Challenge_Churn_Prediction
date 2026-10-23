@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -26,13 +24,20 @@ class LoggingSettings(BaseSettings):
     formato: str
 
 
-@lru_cache
-def obter_logging_settings() -> LoggingSettings:
-    """Retorna a instancia singleton de LoggingSettings.
+class LoggingSettingsFactory:
+    """Fabrica responsavel pela instancia singleton de LoggingSettings."""
 
-    Returns
-    -------
-    LoggingSettings
-        Configuracoes de logging da aplicacao.
-    """
-    return LoggingSettings()
+    _instancia: LoggingSettings | None = None
+
+    @classmethod
+    def criar(cls) -> LoggingSettings:
+        """Cria (ou reutiliza) a instancia singleton de LoggingSettings.
+
+        Returns
+        -------
+        LoggingSettings
+            Configuracoes de logging da aplicacao.
+        """
+        if cls._instancia is None:
+            cls._instancia = LoggingSettings()
+        return cls._instancia

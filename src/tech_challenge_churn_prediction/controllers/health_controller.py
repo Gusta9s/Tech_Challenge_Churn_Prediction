@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from tech_challenge_churn_prediction.controllers.dependencies import (
-    obter_health_check_service,
+    HealthCheckServiceFactory,
 )
 from tech_challenge_churn_prediction.schemas.health_status import HealthStatus
 from tech_challenge_churn_prediction.services.health_check_service import (
@@ -27,7 +27,7 @@ def verificar_liveness() -> HealthStatus:
 @router.get("/readiness", response_model=HealthStatus, status_code=200)
 def verificar_readiness(
     health_check_service: HealthCheckService = Depends(
-        obter_health_check_service
+        HealthCheckServiceFactory.criar
     ),
 ) -> HealthStatus:
     """Endpoint de readiness: confirma que o modelo esta carregado.

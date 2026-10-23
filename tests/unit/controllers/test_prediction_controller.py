@@ -48,15 +48,15 @@ def test_predict_retorna_200_com_o_resultado_no_fluxo_feliz(
     payload_valido_dict,
 ):
     """Predict retorna 200 com o resultado no fluxo feliz."""
-    app.dependency_overrides[dependencies.obter_preprocessing_service] = (
-        lambda: PreprocessingFalsoOk()
-    )
-    app.dependency_overrides[dependencies.obter_model_loader_service] = (
+    app.dependency_overrides[
+        dependencies.ChurnPreprocessingServiceFactory.criar
+    ] = lambda: PreprocessingFalsoOk()
+    app.dependency_overrides[dependencies.ModelLoaderServiceFactory.criar] = (
         lambda: ModelLoaderFalsoOk()
     )
-    app.dependency_overrides[dependencies.obter_prediction_service] = (
-        lambda: PredictionFalsoOk()
-    )
+    app.dependency_overrides[
+        dependencies.ChurnPredictionServiceFactory.criar
+    ] = lambda: PredictionFalsoOk()
     client = TestClient(app)
 
     resposta = client.post("/predict", json=payload_valido_dict)
@@ -73,9 +73,9 @@ def test_predict_retorna_400_quando_o_pre_processamento_falha(
     payload_valido_dict,
 ):
     """Predict retorna 400 quando o pre processamento falha."""
-    app.dependency_overrides[dependencies.obter_preprocessing_service] = (
-        lambda: PreprocessingFalsoComFalha()
-    )
+    app.dependency_overrides[
+        dependencies.ChurnPreprocessingServiceFactory.criar
+    ] = lambda: PreprocessingFalsoComFalha()
     client = TestClient(app)
 
     resposta = client.post("/predict", json=payload_valido_dict)
@@ -88,10 +88,10 @@ def test_predict_retorna_500_quando_o_carregamento_do_modelo_falha(
     payload_valido_dict,
 ):
     """Predict retorna 500 quando o carregamento do modelo falha."""
-    app.dependency_overrides[dependencies.obter_preprocessing_service] = (
-        lambda: PreprocessingFalsoOk()
-    )
-    app.dependency_overrides[dependencies.obter_model_loader_service] = (
+    app.dependency_overrides[
+        dependencies.ChurnPreprocessingServiceFactory.criar
+    ] = lambda: PreprocessingFalsoOk()
+    app.dependency_overrides[dependencies.ModelLoaderServiceFactory.criar] = (
         lambda: ModelLoaderFalsoComFalha()
     )
     client = TestClient(app)

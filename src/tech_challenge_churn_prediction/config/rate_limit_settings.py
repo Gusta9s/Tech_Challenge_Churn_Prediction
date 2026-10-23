@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -32,13 +30,20 @@ class RateLimitSettings(BaseSettings):
     cabecalho_requisicoes_restantes: str
 
 
-@lru_cache
-def obter_rate_limit_settings() -> RateLimitSettings:
-    """Retorna a instancia singleton de RateLimitSettings.
+class RateLimitSettingsFactory:
+    """Fabrica responsavel pela instancia singleton de RateLimitSettings."""
 
-    Returns
-    -------
-    RateLimitSettings
-        Configuracoes do limite de requisicoes por cliente.
-    """
-    return RateLimitSettings()
+    _instancia: RateLimitSettings | None = None
+
+    @classmethod
+    def criar(cls) -> RateLimitSettings:
+        """Cria (ou reutiliza) a instancia singleton de RateLimitSettings.
+
+        Returns
+        -------
+        RateLimitSettings
+            Configuracoes do limite de requisicoes por cliente.
+        """
+        if cls._instancia is None:
+            cls._instancia = RateLimitSettings()
+        return cls._instancia

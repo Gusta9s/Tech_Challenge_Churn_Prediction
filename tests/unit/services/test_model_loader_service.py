@@ -49,7 +49,9 @@ def test_resolve_caminho_do_modelo_dinamicamente_quando_nao_informado(
     diretorio_versao = tmp_path / "v9.9.9"
     diretorio_versao.mkdir()
     mocker.patch.object(
-        alvo, "obter_model_settings", return_value=ConfiguracoesModeloFalsas()
+        alvo.ModelSettingsFactory,
+        "criar",
+        return_value=ConfiguracoesModeloFalsas(),
     )
     mocker.patch.object(alvo, "encontrar_raiz_projeto", return_value=tmp_path)
     mocker.patch.object(
