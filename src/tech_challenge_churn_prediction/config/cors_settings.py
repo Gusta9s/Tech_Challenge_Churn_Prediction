@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -36,13 +34,20 @@ class CorsSettings(BaseSettings):
     permitir_credenciais: bool
 
 
-@lru_cache
-def obter_cors_settings() -> CorsSettings:
-    """Retorna a instancia singleton de CorsSettings.
+class CorsSettingsFactory:
+    """Fabrica responsavel pela instancia singleton de CorsSettings."""
 
-    Returns
-    -------
-    CorsSettings
-        Configuracoes de CORS da aplicacao.
-    """
-    return CorsSettings()
+    _instancia: CorsSettings | None = None
+
+    @classmethod
+    def criar(cls) -> CorsSettings:
+        """Cria (ou reutiliza) a instancia singleton de CorsSettings.
+
+        Returns
+        -------
+        CorsSettings
+            Configuracoes de CORS da aplicacao.
+        """
+        if cls._instancia is None:
+            cls._instancia = CorsSettings()
+        return cls._instancia

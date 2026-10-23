@@ -1,6 +1,6 @@
 from tech_challenge_churn_prediction.config.rate_limit_settings import (
     RateLimitSettings,
-    obter_rate_limit_settings,
+    RateLimitSettingsFactory,
 )
 
 
@@ -17,9 +17,9 @@ def test_rate_limit_settings_constroi_a_partir_dos_valores_informados():
     assert configuracoes.cabecalho_requisicoes_restantes == "X-Teste-Restantes"
 
 
-def test_obter_rate_limit_settings_retorna_singleton():
-    """Obter rate limit settings retorna singleton."""
-    primeira_chamada = obter_rate_limit_settings()
-    segunda_chamada = obter_rate_limit_settings()
+def test_rate_limit_settings_factory_criar_retorna_singleton():
+    """Rate limit settings factory criar retorna singleton."""
+    primeira_chamada = RateLimitSettingsFactory.criar()
+    segunda_chamada = RateLimitSettingsFactory.criar()
 
     assert primeira_chamada is segunda_chamada

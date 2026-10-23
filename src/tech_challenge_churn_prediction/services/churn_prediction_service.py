@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator
 
 from tech_challenge_churn_prediction.config.prediction_settings import (
-    obter_prediction_settings,
+    PredictionSettingsFactory,
 )
 from tech_challenge_churn_prediction.schemas.churn_prediction_result import (
     ChurnPredictionResult,
@@ -23,7 +23,7 @@ class ChurnPredictionService:
     def __init__(self) -> None:
         """Resolve o limiar de decisao de churn a partir das settings."""
         self._limiar_decisao_churn = (
-            obter_prediction_settings().limiar_decisao_churn
+            PredictionSettingsFactory.criar().limiar_decisao_churn
         )
 
     def prever(

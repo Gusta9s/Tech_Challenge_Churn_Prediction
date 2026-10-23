@@ -1,5 +1,5 @@
 from tech_challenge_churn_prediction.config.security_settings import (
-    obter_security_settings,
+    SecuritySettingsFactory,
 )
 
 
@@ -17,7 +17,7 @@ def mascarar_campos_sensiveis(dados: dict) -> dict:
         Copia de `dados` com os campos sensiveis (definidos em
         SecuritySettings) substituidos pela mascara configurada.
     """
-    configuracoes_seguranca = obter_security_settings()
+    configuracoes_seguranca = SecuritySettingsFactory.criar()
     return {
         chave: (
             configuracoes_seguranca.mascara_padrao

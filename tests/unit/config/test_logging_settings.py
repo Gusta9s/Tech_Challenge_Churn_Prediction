@@ -1,6 +1,6 @@
 from tech_challenge_churn_prediction.config.logging_settings import (
     LoggingSettings,
-    obter_logging_settings,
+    LoggingSettingsFactory,
 )
 
 
@@ -12,9 +12,9 @@ def test_logging_settings_constroi_a_partir_dos_valores_informados():
     assert configuracoes.formato == "%(message)s"
 
 
-def test_obter_logging_settings_retorna_singleton():
-    """Obter logging settings retorna singleton."""
-    primeira_chamada = obter_logging_settings()
-    segunda_chamada = obter_logging_settings()
+def test_logging_settings_factory_criar_retorna_singleton():
+    """Logging settings factory criar retorna singleton."""
+    primeira_chamada = LoggingSettingsFactory.criar()
+    segunda_chamada = LoggingSettingsFactory.criar()
 
     assert primeira_chamada is segunda_chamada

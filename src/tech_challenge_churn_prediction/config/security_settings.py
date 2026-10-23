@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,13 +25,20 @@ class SecuritySettings(BaseSettings):
     mascara_padrao: str
 
 
-@lru_cache
-def obter_security_settings() -> SecuritySettings:
-    """Retorna a instancia singleton de SecuritySettings.
+class SecuritySettingsFactory:
+    """Fabrica responsavel pela instancia singleton de SecuritySettings."""
 
-    Returns
-    -------
-    SecuritySettings
-        Configuracoes de mascaramento de dados sensiveis.
-    """
-    return SecuritySettings()
+    _instancia: SecuritySettings | None = None
+
+    @classmethod
+    def criar(cls) -> SecuritySettings:
+        """Cria (ou reutiliza) a instancia singleton de SecuritySettings.
+
+        Returns
+        -------
+        SecuritySettings
+            Configuracoes de mascaramento de dados sensiveis.
+        """
+        if cls._instancia is None:
+            cls._instancia = SecuritySettings()
+        return cls._instancia

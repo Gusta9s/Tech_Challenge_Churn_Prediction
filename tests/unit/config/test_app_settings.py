@@ -1,6 +1,6 @@
 from tech_challenge_churn_prediction.config.app_settings import (
     AppSettings,
-    obter_app_settings,
+    AppSettingsFactory,
 )
 
 
@@ -12,9 +12,9 @@ def test_app_settings_constroi_a_partir_dos_valores_informados():
     assert configuracoes.versao == "9.9.9"
 
 
-def test_obter_app_settings_retorna_singleton():
-    """Obter app settings retorna singleton."""
-    primeira_chamada = obter_app_settings()
-    segunda_chamada = obter_app_settings()
+def test_app_settings_factory_criar_retorna_singleton():
+    """App settings factory criar retorna singleton."""
+    primeira_chamada = AppSettingsFactory.criar()
+    segunda_chamada = AppSettingsFactory.criar()
 
     assert primeira_chamada is segunda_chamada

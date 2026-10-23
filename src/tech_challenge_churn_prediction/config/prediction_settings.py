@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,13 +22,20 @@ class PredictionSettings(BaseSettings):
     limiar_decisao_churn: float
 
 
-@lru_cache
-def obter_prediction_settings() -> PredictionSettings:
-    """Retorna a instancia singleton de PredictionSettings.
+class PredictionSettingsFactory:
+    """Fabrica responsavel pela instancia singleton de PredictionSettings."""
 
-    Returns
-    -------
-    PredictionSettings
-        Configuracoes de decisao da predicao.
-    """
-    return PredictionSettings()
+    _instancia: PredictionSettings | None = None
+
+    @classmethod
+    def criar(cls) -> PredictionSettings:
+        """Cria (ou reutiliza) a instancia singleton de PredictionSettings.
+
+        Returns
+        -------
+        PredictionSettings
+            Configuracoes de decisao da predicao.
+        """
+        if cls._instancia is None:
+            cls._instancia = PredictionSettings()
+        return cls._instancia

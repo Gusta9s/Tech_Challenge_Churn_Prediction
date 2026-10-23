@@ -1,5 +1,3 @@
-from functools import lru_cache
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,13 +25,20 @@ class ModelSettings(BaseSettings):
     nome_arquivo_modelo: str
 
 
-@lru_cache
-def obter_model_settings() -> ModelSettings:
-    """Retorna a instancia singleton de ModelSettings.
+class ModelSettingsFactory:
+    """Fabrica responsavel por criar a instancia singleton de ModelSettings."""
 
-    Returns
-    -------
-    ModelSettings
-        Configuracoes do artefato do modelo campeao.
-    """
-    return ModelSettings()
+    _instancia: ModelSettings | None = None
+
+    @classmethod
+    def criar(cls) -> ModelSettings:
+        """Cria (ou reutiliza) a instancia singleton de ModelSettings.
+
+        Returns
+        -------
+        ModelSettings
+            Configuracoes do artefato do modelo campeao.
+        """
+        if cls._instancia is None:
+            cls._instancia = ModelSettings()
+        return cls._instancia
