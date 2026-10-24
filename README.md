@@ -259,3 +259,151 @@ docker compose down
 
 A documentação interativa da API (Swagger UI) fica disponível em
 `http://localhost:8001/docs` assim que o container estiver de pé.
+
+---
+
+## 🧪 Testando o endpoint `POST /predict`
+
+Com o container de pé (seção anterior), use as informações abaixo para
+reproduzir a chamada de predição em qualquer máquina.
+
+| Item | Valor |
+|---|---|
+| **Verbo HTTP** | `POST` (outros verbos retornam `405`) |
+| **URL** | `http://localhost:8001/predict` (porta publicada no host) |
+| **Header obrigatório** | `Content-Type: application/json` |
+| **Header opcional** | `Accept: application/json` |
+| **Autenticação** | Nenhuma (não há token/API key) |
+| **Corpo** | JSON com os 17 campos descritos abaixo (todos obrigatórios) |
+
+> O header `Origin` **não** é necessário para `curl`/Postman. O CORS só é
+> verificado por navegadores (ex.: Swagger UI em `http://localhost:8001/docs`),
+> e exige que a origem esteja em `CORS_ORIGENS_PERMITIDAS` (veja a seção 4).
+
+### Payload de exemplo
+
+```json
+{
+  "cliente_em_idade_avancada": 0,
+  "casado": "Yes",
+  "meses_como_cliente": 2,
+  "possui_servico_telefonico": "Yes",
+  "possui_multiplas_linhas": "No",
+  "possui_servico_de_internet": "Fiber optic",
+  "possui_seguranca_online": "No",
+  "possui_backup_online": "No",
+  "possui_protecao_dispositivo": "No",
+  "possui_suporte_tecnico_premium": "No",
+  "possui_streaming_tv_terceiros": "No",
+  "possui_streaming_filmes_terceiros": "No",
+  "tipo_contrato": "Month-to-month",
+  "fatura_sem_papel": "Yes",
+  "metodo_pagamento": "Electronic check",
+  "cobranca_mensal": 70.7,
+  "total_cobrado_durante_trimestre": 151.65
+}
+```
+
+### Valores aceitos por campo
+
+| Campo | Tipo / valores válidos |
+|---|---|
+| `cliente_em_idade_avancada` | `0` ou `1` |
+| `casado`, `possui_servico_telefonico`, `fatura_sem_papel` | `"Yes"`, `"No"` |
+| `meses_como_cliente` | inteiro `>= 0` |
+| `possui_multiplas_linhas` | `"Yes"`, `"No"`, `"No phone service"` |
+| `possui_servico_de_internet` | `"DSL"`, `"Fiber optic"`, `"No"` |
+| `possui_seguranca_online`, `possui_backup_online`, `possui_protecao_dispositivo`, `possui_suporte_tecnico_premium`, `possui_streaming_tv_terceiros`, `possui_streaming_filmes_terceiros` | `"Yes"`, `"No"`, `"No internet service"` |
+| `tipo_contrato` | `"Month-to-month"`, `"One year"`, `"Two year"` |
+| `metodo_pagamento` | `"Mailed check"`, `"Electronic check"`, `"Bank transfer (automatic)"`, `"Credit card (automatic)"` |
+| `cobranca_mensal`, `total_cobrado_durante_trimestre` | número `>= 0` |
+
+### curl (Linux/macOS/Git Bash)
+
+```bash
+curl -i -X POST http://localhost:8001/predict \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{
+    "cliente_em_idade_avancada": 0,
+    "casado": "Yes",
+    "meses_como_cliente": 2,
+    "possui_servico_telefonico": "Yes",
+    "possui_multiplas_linhas": "No",
+    "possui_servico_de_internet": "Fiber optic",
+    "possui_seguranca_online": "No",
+    "possui_backup_online": "No",
+    "possui_protecao_dispositivo": "No",
+    "possui_suporte_tecnico_premium": "No",
+    "possui_streaming_tv_terceiros": "No",
+    "possui_streaming_filmes_terceiros": "No",
+    "tipo_contrato": "Month-to-month",
+    "fatura_sem_papel": "Yes",
+    "metodo_pagamento": "Electronic check",
+    "cobranca_mensal": 70.7,
+    "total_cobrado_durante_trimestre": 151.65
+  }'
+```
+
+### PowerShell (Windows)
+
+```powershell
+$corpo = @{
+  cliente_em_idade_avancada = 0
+  casado = "Yes"
+  meses_como_cliente = 2
+  possui_servico_telefonico = "Yes"
+  possui_multiplas_linhas = "No"
+  possui_servico_de_internet = "Fiber optic"
+  possui_seguranca_online = "No"
+  possui_backup_online = "No"
+  possui_protecao_dispositivo = "No"
+  possui_suporte_tecnico_premium = "No"
+  possui_streaming_tv_terceiros = "No"
+  possui_streaming_filmes_terceiros = "No"
+  tipo_contrato = "Month-to-month"
+  fatura_sem_papel = "Yes"
+  metodo_pagamento = "Electronic check"
+  cobranca_mensal = 70.7
+  total_cobrado_durante_trimestre = 151.65
+} | ConvertTo-Json
+
+Invoke-RestMethod -Method Post -Uri "http://localhost:8001/predict" `
+  -ContentType "application/json" -Body $corpo
+```
+
+### Resposta esperada (`200 OK`)
+
+```json
+{
+  "churn_previsto": true,
+  "probabilidade_churn": 0.0,
+  "probabilidade_nao_churn": 0.0
+}
+```
+
+Os valores de probabilidade acima são ilustrativos: o formato é fixo, mas os
+números dependem do modelo versionado em `models/`. `churn_previsto` é `true`
+quando `probabilidade_churn >= PREDICTION_LIMIAR_DECISAO_CHURN`. A resposta
+inclui o header `X-RateLimit-Remaining` (nome definido em
+`RATE_LIMIT_CABECALHO_REQUISICOES_RESTANTES`).
+
+### Códigos de erro
+
+Erros seguem o formato `{"level", "message", "erro", "cause"}`.
+
+| Status | Quando ocorre |
+|---|---|
+| `400` | Falha no pré-processamento do payload |
+| `405` | Verbo diferente de `POST` |
+| `422` | Campo ausente, valor fora da lista aceita ou tipo inválido (validação do Pydantic) |
+| `429` | Mais de `RATE_LIMIT_LIMITE_REQUISICOES` requisições por `RATE_LIMIT_JANELA_EM_SEGUNDOS` (por IP). Aguarde a janela expirar |
+| `500` | Falha ao carregar o modelo ou executar a predição |
+
+Exemplo de teste de validação (deve retornar `422`):
+
+```bash
+curl -i -X POST http://localhost:8001/predict \
+  -H "Content-Type: application/json" \
+  -d '{"casado": "Talvez"}'
+```
