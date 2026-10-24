@@ -155,6 +155,12 @@ referência de formato, não copie os valores literalmente. Dicas por grupo:
 > `.gitignore`. Apenas o `.env.example` (com valores ilustrativos) deve ir
 > para o repositório.
 
+> 📌 **Nota de avaliação acadêmica**: para fins de avaliação da banca deste
+> Tech Challenge, as variáveis em `.env.example` estão temporariamente
+> preenchidas com os valores reais utilizados neste projeto, para facilitar
+> a reprodução do ambiente durante a correção. Em commits futuros, esses
+> valores serão revertidos para valores ilustrativos de exemplo.
+
 ### 4. Configurando o CORS para reprodutibilidade em qualquer máquina
 
 O CORS (*Cross-Origin Resource Sharing*) controla **de quais origens**
