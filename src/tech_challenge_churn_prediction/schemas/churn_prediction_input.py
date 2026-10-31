@@ -6,17 +6,58 @@ from pydantic import BaseModel, Field
 class ChurnPredictionInput(BaseModel):
     """Payload de uma unica requisicao de predicao de churn.
 
-    Os campos correspondem aos dados brutos de um cliente (equivalentes ao
-    dataset de treinamento, antes das transformacoes de pre-processamento).
-    Campos sem poder preditivo e descartados no treinamento (id do cliente,
-    genero, dependentes) nao fazem parte do payload.
+    Os campos correspondem aos dados brutos de um cliente (equivalentes
+    ao dataset de treinamento, antes das transformacoes de
+    pre-processamento). Campos sem poder preditivo e descartados no
+    treinamento (id do cliente, genero, dependentes) nao fazem parte do
+    payload.
+
+    Attributes
+    ----------
+    cliente_em_idade_avancada : {0, 1}
+        Indica se o cliente e idoso.
+    casado : {"Yes", "No"}
+        Indica se o cliente possui conjuge.
+    meses_como_cliente : int
+        Tempo de permanencia do cliente, em meses.
+    possui_servico_telefonico : {"Yes", "No"}
+        Indica se o cliente possui servico telefonico.
+    possui_multiplas_linhas : {"Yes", "No", "No phone service"}
+        Indica se o cliente possui multiplas linhas telefonicas.
+    possui_servico_de_internet : {"DSL", "Fiber optic", "No"}
+        Tipo de servico de internet contratado.
+    possui_seguranca_online : {"Yes", "No", "No internet service"}
+        Indica se o cliente possui seguranca online.
+    possui_backup_online : {"Yes", "No", "No internet service"}
+        Indica se o cliente possui backup online.
+    possui_protecao_dispositivo : {"Yes", "No", "No internet service"}
+        Indica se o cliente possui protecao de dispositivo.
+    possui_suporte_tecnico_premium : {"Yes", "No", "No internet service"}
+        Indica se o cliente possui suporte tecnico premium.
+    possui_streaming_tv_terceiros : {"Yes", "No", "No internet service"}
+        Indica se o cliente possui streaming de TV de terceiros.
+    possui_streaming_filmes_terceiros : str
+        Indica se o cliente possui streaming de filmes de terceiros
+        ("Yes", "No" ou "No internet service").
+    tipo_contrato : {"Month-to-month", "One year", "Two year"}
+        Tipo de contrato do cliente.
+    fatura_sem_papel : {"Yes", "No"}
+        Indica se o cliente optou por fatura sem papel.
+    metodo_pagamento : str
+        Metodo de pagamento utilizado pelo cliente.
+    cobranca_mensal : float
+        Valor da cobranca mensal.
+    total_cobrado_durante_trimestre : float
+        Valor total cobrado no trimestre.
     """
 
     cliente_em_idade_avancada: Literal[0, 1] = Field(
         ..., description="Indica se o cliente e idoso (1) ou nao (0)."
     )
     casado: Literal["Yes", "No"] = Field(..., description="Possui conjuge.")
-    meses_como_cliente: int = Field(..., ge=0, description="Tempo de permanencia em meses.")
+    meses_como_cliente: int = Field(
+        ..., ge=0, description="Tempo de permanencia em meses."
+    )
     possui_servico_telefonico: Literal["Yes", "No"]
     possui_multiplas_linhas: Literal["Yes", "No", "No phone service"]
     possui_servico_de_internet: Literal["DSL", "Fiber optic", "No"]
@@ -25,7 +66,9 @@ class ChurnPredictionInput(BaseModel):
     possui_protecao_dispositivo: Literal["Yes", "No", "No internet service"]
     possui_suporte_tecnico_premium: Literal["Yes", "No", "No internet service"]
     possui_streaming_tv_terceiros: Literal["Yes", "No", "No internet service"]
-    possui_streaming_filmes_terceiros: Literal["Yes", "No", "No internet service"]
+    possui_streaming_filmes_terceiros: Literal[
+        "Yes", "No", "No internet service"
+    ]
     tipo_contrato: Literal["Month-to-month", "One year", "Two year"]
     fatura_sem_papel: Literal["Yes", "No"]
     metodo_pagamento: Literal[
@@ -34,7 +77,9 @@ class ChurnPredictionInput(BaseModel):
         "Bank transfer (automatic)",
         "Credit card (automatic)",
     ]
-    cobranca_mensal: float = Field(..., ge=0, description="Valor da cobranca mensal.")
+    cobranca_mensal: float = Field(
+        ..., ge=0, description="Valor da cobranca mensal."
+    )
     total_cobrado_durante_trimestre: float = Field(
         ..., ge=0, description="Valor total cobrado no trimestre."
     )

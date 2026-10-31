@@ -1,29 +1,56 @@
 import pandas as pd
 from sklearn.base import BaseEstimator
 
-from tech_challenge_churn_prediction.schemas.churn_prediction_result import ChurnPredictionResult
+from tech_challenge_churn_prediction.config.prediction_settings import (
+    PredictionSettingsFactory,
+)
+from tech_challenge_churn_prediction.schemas.churn_prediction_result import (
+    ChurnPredictionResult,
+)
 
 INDICE_CLASSE_NAO_CHURN = 0
 INDICE_CLASSE_CHURN = 1
-LIMIAR_DECISAO_CHURN = 0.5
 
 
 class ChurnPredictionService:
-    """Responsavel exclusivamente por executar a predicao do modelo treinado
-    sobre features ja pre-processadas e traduzir a saida bruta do sklearn em
-    um resultado de dominio (ChurnPredictionResult).
+    """Executa a predicao do modelo e traduz o resultado para o dominio.
 
-    Nao carrega o modelo nem pre-processa dados: recebe ambos por parametro,
-    mantendo baixo acoplamento com as demais responsabilidades do fluxo.
+    Nao carrega o modelo nem pre-processa dados: recebe ambos por
+    parametro, mantendo baixo acoplamento com as demais
+    responsabilidades do fluxo.
     """
 
-    def prever(self, modelo: BaseEstimator, features: pd.DataFrame) -> ChurnPredictionResult:
+    def __init__(self) -> None:
+        """Resolve o limiar de decisao de churn a partir das settings."""
+        self._limiar_decisao_churn = (
+            PredictionSettingsFactory.criar().limiar_decisao_churn
+        )
+
+    def prever(
+        self, modelo: BaseEstimator, features: pd.DataFrame
+    ) -> ChurnPredictionResult:
+        """Executa a predicao do modelo sobre as features informadas.
+
+        Parameters
+        ----------
+        modelo : sklearn.base.BaseEstimator
+            Estimador treinado, ja carregado em memoria.
+        features : pandas.DataFrame
+            Features pre-processadas, na ordem esperada pelo modelo.
+
+        Returns
+        -------
+        ChurnPredictionResult
+            Resultado de dominio com a decisao e as probabilidades.
+        """
         probabilidades = modelo.predict_proba(features)[0]
         probabilidade_churn = float(probabilidades[INDICE_CLASSE_CHURN])
-        probabilidade_nao_churn = float(probabilidades[INDICE_CLASSE_NAO_CHURN])
+        probabilidade_nao_churn = float(
+            probabilidades[INDICE_CLASSE_NAO_CHURN]
+        )
 
         return ChurnPredictionResult(
-            churn_previsto=probabilidade_churn >= LIMIAR_DECISAO_CHURN,
+            churn_previsto=probabilidade_churn >= self._limiar_decisao_churn,
             probabilidade_churn=probabilidade_churn,
             probabilidade_nao_churn=probabilidade_nao_churn,
         )
